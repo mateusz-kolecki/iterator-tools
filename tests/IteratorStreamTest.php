@@ -139,4 +139,35 @@ class IteratorStreamTest extends TestCase
 
         $this->assertSame($expected, $reversed);
     }
+
+
+    /** @test */
+    function it_should_reverse_after_mapping_filtering_and_append(): void
+    {
+        $stream = IteratorStream::empty()
+            ->append([
+                1 => 'one',
+                2 => 'two',
+                3 => 'three',
+            ])
+
+            ->map(function (string $str) {
+                return strtoupper($str);
+            })
+
+            ->filter(function (string $str): bool {
+                return $str[0] === 'T';
+            })
+
+            ->reverse();
+
+        $reversed = $stream->toArrayPreserveKeys();
+
+        $expected = [
+            3 => 'THREE',
+            2 => 'TWO',
+        ];
+
+        $this->assertSame($expected, $reversed);
+    }
 }
