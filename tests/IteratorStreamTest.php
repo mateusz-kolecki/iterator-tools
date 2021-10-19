@@ -170,4 +170,53 @@ class IteratorStreamTest extends TestCase
 
         $this->assertSame($expected, $reversed);
     }
+
+    /** @test */
+    function it_should_limit_the_result(): void
+    {
+        $stream = IteratorStream::empty()
+            ->append([
+                'one' => 1,
+                'two' => 2,
+                'three' => 3,
+                'four' => 4,
+                'fife' => 5,
+            ])
+
+            ->limit(3);
+
+        $result = $stream->toArrayPreserveKeys();
+
+        $expected = [
+            'one' => 1,
+            'two' => 2,
+            'three' => 3,
+        ];
+
+        $this->assertSame($expected, $result);
+    }
+
+    /** @test */
+    function it_should_skip_the_result(): void
+    {
+        $stream = IteratorStream::empty()
+            ->append([
+                'one' => 1,
+                'two' => 2,
+                'three' => 3,
+                'four' => 4,
+                'fife' => 5,
+            ])
+
+            ->skip(3);
+
+        $result = $stream->toArrayPreserveKeys();
+
+        $expected = [
+            'four' => 4,
+            'fife' => 5,
+        ];
+
+        $this->assertSame($expected, $result);
+    }
 }

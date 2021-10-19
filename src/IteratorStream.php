@@ -9,6 +9,7 @@ use CallbackFilterIterator;
 use EmptyIterator;
 use Iterator;
 use IteratorAggregate;
+use LimitIterator;
 use Traversable;
 use function iterator_to_array;
 
@@ -126,6 +127,33 @@ class IteratorStream implements IteratorAggregate
         return self::from(
             new ReverseIterator(
                 $this->innerTraversable
+            )
+        );
+    }
+
+    /**
+     * @psalm-return self<K,V>
+     */
+    public function limit(int $count): self
+    {
+        return self::from(
+            new LimitIterator(
+                self::toIterator($this->innerTraversable),
+                0,
+                $count
+            )
+        );
+    }
+
+    /**
+     * @psalm-return self<K,V>
+     */
+    public function skip(int $count): self
+    {
+        return self::from(
+            new LimitIterator(
+                self::toIterator($this->innerTraversable),
+                $count
             )
         );
     }
