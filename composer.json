@@ -1,0 +1,30 @@
+{
+  "name": "mkolecki/iterator-tools",
+  "description": "Tools to work with iterators including lazy evaluation",
+  "license": "MIT",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Mateusz Kołecki",
+      "email": "kolecki.mateusz@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.4 || ^8.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5",
+    "vimeo/psalm": "^4.10",
+    "psalm/plugin-phpunit": "^0.16.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "MK\\IteratorTools\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "MK\\IteratorTools\\": "tests/"
+    }
+  }
+}
