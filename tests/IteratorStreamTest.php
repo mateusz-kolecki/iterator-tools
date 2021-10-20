@@ -99,8 +99,8 @@ class IteratorStreamTest extends TestCase
     {
         $stream = IteratorStream::empty();
 
-        $result = $stream->reduce(0, function ($_v, $_k, int $counter): int {
-            return $counter + 1;
+        $result = $stream->reduce(0, function (): int {
+            return 1;
         });
 
         $this->assertSame(0, $result);
@@ -112,7 +112,7 @@ class IteratorStreamTest extends TestCase
     {
         $stream = IteratorStream::from(['Hello', 'World']);
 
-        $result = $stream->reduce("--", function (string $value, int $key, string $acc): string {
+        $result = $stream->reduce("--", function (string $value, string $acc, int $key): string {
             return "{$acc}{$key}:{$value}--";
         });
 
@@ -218,5 +218,18 @@ class IteratorStreamTest extends TestCase
         ];
 
         $this->assertSame($expected, $result);
+    }
+
+    /** @test */
+    public function it_should_allow_consumer_callbacks(): void
+    {
+        $sum = IteratorStream::from(['1', '2'])
+            ->mapValue('floatval')
+            ->filter(function () {
+                return true;
+            })
+            ->consume(Consumer::floatSum());
+
+        $this->assertSame(3.0, $sum);
     }
 }

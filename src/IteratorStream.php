@@ -24,12 +24,12 @@ class IteratorStream implements IteratorAggregate
     /**
      * @psalm-var Traversable<K, V>
      */
-    private Traversable $innerTraversable;
+    protected Traversable $innerTraversable;
 
     /**
      * @psalm-param Traversable<K, V> $traversable
      */
-    private function __construct(Traversable $traversable)
+    protected function __construct(Traversable $traversable)
     {
         $this->innerTraversable = $traversable;
     }
@@ -103,17 +103,39 @@ class IteratorStream implements IteratorAggregate
     }
 
     /**
+     * @psalm-template R
+     *
+     * @psalm-param callable(V):R $callback
+     * @psalm-return self<K,R>
+     */
+    public function mapValue(callable $callback): self
+    {
+        /** @psalm-var Iterator<K, R> $mapIterator */
+        $mapIterator = new CallbackMapIterator(
+            $this->innerTraversable,
+            /**
+             * @psalm-param V $value
+             */
+            function ($value) use ($callback) {
+                return $callback($value);
+            }
+        );
+
+        return self::from($mapIterator);
+    }
+
+    /**
      * @psalm-template S
      *
      * @psalm-param S $accumulator
-     * @psalm-param callable(V, K, S): S $callback
+     * @psalm-param callable(V, S, K):S $callback
      *
      * @psalm-return S
      */
     public function reduce($accumulator, callable $callback)
     {
         foreach ($this->innerTraversable as $key => $value) {
-            $accumulator = $callback($value, $key, $accumulator);
+            $accumulator = $callback($value, $accumulator, $key);
         }
 
         return $accumulator;
@@ -156,6 +178,17 @@ class IteratorStream implements IteratorAggregate
                 $count
             )
         );
+    }
+
+    /**
+     * @template R
+     *
+     * @psalm-param callable(self<K,V>):R $consumer
+     * @psalm-return R
+     */
+    public function consume(callable $consumer)
+    {
+        return $consumer($this);
     }
 
     /**

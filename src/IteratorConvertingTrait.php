@@ -17,7 +17,7 @@ trait IteratorConvertingTrait
      * @psalm-param  iterable<TKey, TValue> $iterable
      * @psalm-return Iterator<TKey, TValue>
      */
-    private static function toIterator(iterable $iterable): Iterator
+    protected static function toIterator(iterable $iterable): Iterator
     {
         if (is_array($iterable)) {
             return new ArrayIterator($iterable);
