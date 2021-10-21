@@ -10,6 +10,7 @@ use Iterator;
 use Traversable;
 use function iterator_to_array;
 use function array_reverse;
+
 /**
  * @psalm-template K
  * @psalm-template V

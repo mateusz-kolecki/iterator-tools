@@ -68,7 +68,7 @@ class IteratorStream implements IteratorAggregate
         $appendIterator->append(self::toIterator($this->innerTraversable));
         $appendIterator->append(self::toIterator($iterable));
 
-        return self::from($appendIterator);
+        return new self($appendIterator);
     }
 
     /**
@@ -77,7 +77,7 @@ class IteratorStream implements IteratorAggregate
      */
     public function filter(callable $callback): self
     {
-        return self::from(
+        return new self(
             new CallbackFilterIterator(
                 self::toIterator($this->innerTraversable),
                 $callback
@@ -99,7 +99,7 @@ class IteratorStream implements IteratorAggregate
             $callback
         );
 
-        return self::from($mapIterator);
+        return new self($mapIterator);
     }
 
     /**
@@ -121,7 +121,7 @@ class IteratorStream implements IteratorAggregate
             }
         );
 
-        return self::from($mapIterator);
+        return new self($mapIterator);
     }
 
     /**
@@ -146,7 +146,7 @@ class IteratorStream implements IteratorAggregate
      */
     public function reverse(): self
     {
-        return self::from(
+        return new self(
             new ReverseIterator(
                 $this->innerTraversable
             )
@@ -158,7 +158,7 @@ class IteratorStream implements IteratorAggregate
      */
     public function limit(int $count): self
     {
-        return self::from(
+        return new self(
             new LimitIterator(
                 self::toIterator($this->innerTraversable),
                 0,
@@ -172,7 +172,7 @@ class IteratorStream implements IteratorAggregate
      */
     public function skip(int $count): self
     {
-        return self::from(
+        return new self(
             new LimitIterator(
                 self::toIterator($this->innerTraversable),
                 $count
