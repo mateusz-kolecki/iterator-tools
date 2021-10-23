@@ -5,60 +5,29 @@ declare(strict_types=1);
 namespace MK\IteratorTools;
 
 use Iterator;
-use Traversable;
 
 /**
  * @psalm-template K
  * @psalm-template V
  * @psalm-template R
  *
- * @template-implements Iterator<K, R>
+ * @template-extends MapIterator<K,V,R>
  */
-class CallbackMapIterator implements Iterator
+class CallbackMapIterator extends MapIterator
 {
-    use IteratorConvertingTrait;
-
     /**
      * @psalm-var callable(V, K, Iterator<K,V>):R
      */
     private $callback;
 
     /**
-     * @psalm-var Iterator<K, V>
-     */
-    private Iterator $traversable;
-
-    /**
-     * @psalm-param Traversable<K, V> $traversable
+     * @psalm-param Iterator<K, V> $traversable
      * @psalm-param callable(V, K, Iterator<K, V>):R $callback
      */
-    public function __construct(Traversable $traversable, callable $callback)
+    public function __construct(Iterator $innerIterator, callable $callback)
     {
-        $this->traversable = self::toIterator($traversable);
+        parent::__construct($innerIterator);
         $this->callback = $callback;
-    }
-
-    public function next(): void
-    {
-        $this->traversable->next();
-    }
-
-    public function valid(): bool
-    {
-        return $this->traversable->valid();
-    }
-
-    /**
-     * @psalm-return K
-     */
-    public function key()
-    {
-        return $this->traversable->key();
-    }
-
-    public function rewind(): void
-    {
-        $this->traversable->rewind();
     }
 
     /**
@@ -66,9 +35,9 @@ class CallbackMapIterator implements Iterator
      */
     public function current()
     {
-        $value = $this->traversable->current();
-        $key = $this->traversable->key();
+        $value = $this->innerIterator->current();
+        $key = $this->innerIterator->key();
 
-        return ($this->callback)($value, $key, $this->traversable);
+        return ($this->callback)($value, $key, $this->innerIterator);
     }
 }
