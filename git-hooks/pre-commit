@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 exit_status=0
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NO_COLOR='\033[0m'
 
 declare -A checks=(
     [Psalm]="vendor/bin/psalm --no-cache"
@@ -15,9 +18,9 @@ for check_name in "${!checks[@]}"; do
     out=$(${checks[$check_name]} 2>&1)
 
     if [ $? -eq 0 ]; then
-        echo "success"
+        echo -e "${GREEN}success :)${NO_COLOR}"
     else
-        echo "failed!"
+        echo -e "${RED}failed!${NO_COLOR}"
         echo "---------------------------------------------------"
         echo "$out"
         echo "---------------------------------------------------"
