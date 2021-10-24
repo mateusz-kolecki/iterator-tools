@@ -26,5 +26,8 @@
     "psr-4": {
       "MK\\IteratorTools\\": "tests/"
     }
+  },
+  "scripts": {
+    "post-update-cmd": "./install-git-hooks"
   }
 }

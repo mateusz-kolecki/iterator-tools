@@ -10,6 +10,9 @@ use EmptyIterator;
 use Iterator;
 use IteratorAggregate;
 use LimitIterator;
+use MK\IteratorTools\Iterator\CallbackMapIterator;
+use MK\IteratorTools\Iterator\IteratorConvertingTrait;
+use MK\IteratorTools\Iterator\ReverseIterator;
 use Traversable;
 use function iterator_to_array;
 

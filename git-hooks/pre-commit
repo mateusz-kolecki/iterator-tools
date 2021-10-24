@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+exit_status=0
+
+declare -A checks=(
+    [Psalm]="vendor/bin/psalm --no-cache"
+    [PHPUnit]="vendor/bin/phpunit --color --testdox"
+)
+
+echo ""
+
+for check_name in "${!checks[@]}"; do
+    echo -en "\rPerforming pre-commit check: ${check_name} ... "
+
+    out=$(${checks[$check_name]} 2>&1)
+
+    if [ $? -eq 0 ]; then
+        echo "success"
+    else
+        echo "failed!"
+        echo "---------------------------------------------------"
+        echo "$out"
+        echo "---------------------------------------------------"
+        echo ""
+        exit_status=1
+    fi
+done
+
+exit $exit_status

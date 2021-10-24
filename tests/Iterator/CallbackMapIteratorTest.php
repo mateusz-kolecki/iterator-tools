@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MK\IteratorTools;
+namespace MK\IteratorTools\Iterator;
 
 use ArrayIterator;
-use Closure;
 use EmptyIterator;
 use PHPUnit\Framework\TestCase;
 use function iterator_to_array;
