@@ -1,10 +1,17 @@
 # Iterator Tools
 
+**Work in progress!**
+
+This library is in early stage of development. It is not ready for production usage.
+Before `v1.0.0` I'm not pushing it to https://packagist.org/.
+
+---
+
 Library providing tools for working with iterator in convenient way. Promotes functional style of
 working with collections. Allowing to define iterators pipeline separately from running consuming iterators.
 Allows to iterate and process large collections by avoiding loading all data to memory when possible.
 
-## Examples
+## Example:
 
 ```php
 <?php
@@ -36,5 +43,6 @@ $total = IteratorStream::from($csvReader)
 ## Install using Composer:
 
 ```bash
+# Not available yet!
 composer require mkolecki/iterator-tools
 ```
