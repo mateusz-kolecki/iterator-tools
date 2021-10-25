@@ -2,15 +2,17 @@
 
 **Work in progress!**
 
-This library is in early stage of development. It is not ready for production usage.
+This library is in an early stage of development. It is not ready for production usage.
 Before `v1.0.0` I'm not pushing it to https://packagist.org/.
 
 ---
 
-Library providing tools for working with iterators in a convenient way. Promotes functional style of programming when dealing with `iterable` collections.
+Library provides tools for working with iterators in a convenient way. Promotes functional style
+of programming when dealing with `iterable` collections.
 
-Allowings to define iterators pipeline separately from actually consuming it.
-Allows to process large collections by avoiding loading all data into the memory.
+Allows defining iterators pipeline separately from actually consuming it.
+Allows processing large collections by avoiding loading all data into the memory
+at once - each key, value pair returned by source iterator is passed by multiple stages separately.
 
 ## Example:
 
