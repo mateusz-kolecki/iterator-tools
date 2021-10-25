@@ -7,9 +7,10 @@ Before `v1.0.0` I'm not pushing it to https://packagist.org/.
 
 ---
 
-Library providing tools for working with iterator in convenient way. Promotes functional style of
-working with collections. Allowing to define iterators pipeline separately from running consuming iterators.
-Allows to iterate and process large collections by avoiding loading all data to memory when possible.
+Library providing tools for working with iterators in a convenient way. Promotes functional style of programming when dealing with `iterable` collections.
+
+Allowings to define iterators pipeline separately from actually consuming it.
+Allows to process large collections by avoiding loading all data into the memory.
 
 ## Example:
 
