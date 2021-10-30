@@ -8,8 +8,6 @@ use ArrayIterator;
 use EmptyIterator;
 use Iterator;
 use Traversable;
-use function iterator_to_array;
-use function array_reverse;
 
 /**
  * @psalm-template K
@@ -19,8 +17,6 @@ use function array_reverse;
  */
 class ReverseIterator implements Iterator
 {
-    use IteratorConvertingTrait;
-
     /**
      * @psalm-var Iterator<K, array{K, V}>
      */
@@ -50,7 +46,7 @@ class ReverseIterator implements Iterator
          */
 
         $this->traversable = new CallbackMapIterator(
-            self::toIterator($traversable),
+            iterator_from($traversable),
             /**
              * @psalm-param V $value
              * @psalm-param K $key

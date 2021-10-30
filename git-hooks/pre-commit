@@ -6,6 +6,7 @@ GREEN='\033[0;32m'
 NO_COLOR='\033[0m'
 
 declare -A checks=(
+    [php-cs-fixer]="vendor/bin/php-cs-fixer fix --diff"
     [Psalm]="vendor/bin/psalm --no-cache"
     [PHPUnit]="vendor/bin/phpunit --color --testdox"
 )

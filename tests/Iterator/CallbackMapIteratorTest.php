@@ -12,10 +12,10 @@ use function iterator_to_array;
 class CallbackMapIteratorTest extends TestCase
 {
     /** @test */
-    function it_should_result_in_empty_set_when_inner_iterator_do_not_return_any_element(): void
+    public function it_should_result_in_empty_set_when_inner_iterator_do_not_return_any_element(): void
     {
         $map = new CallbackMapIterator(
-            new EmptyIterator,
+            new EmptyIterator(),
             function (int $i) {
                 return $i;
             }
@@ -32,7 +32,7 @@ class CallbackMapIteratorTest extends TestCase
      *
      * @psalm-param list<int> $items
      */
-    function it_returns_same_number_of_elements_when_inner_iterator_is_not_empty(
+    public function it_returns_same_number_of_elements_when_inner_iterator_is_not_empty(
         array $items
     ): void {
         $innerIterator = new ArrayIterator($items);
@@ -52,7 +52,7 @@ class CallbackMapIteratorTest extends TestCase
     /**
      * @psalm-return list<list<list<int>>>
      */
-    function differentCountItemsProvider(): array
+    public function differentCountItemsProvider(): array
     {
         return [
             [[1]],
@@ -62,7 +62,7 @@ class CallbackMapIteratorTest extends TestCase
     }
 
     /** @test */
-    function it_should_return_mapped_elements(): void
+    public function it_should_return_mapped_elements(): void
     {
         $innerIterator = new ArrayIterator([1, 2, 3, 4, 5]);
 
@@ -78,7 +78,7 @@ class CallbackMapIteratorTest extends TestCase
     }
 
     /** @test */
-    function it_preserves_original_keys(): void
+    public function it_preserves_original_keys(): void
     {
         $innerIterator = new ArrayIterator([
             'foo' => 10,

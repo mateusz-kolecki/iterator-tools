@@ -12,7 +12,7 @@ use function iterator_to_array;
 class ReverseIteratorTest extends TestCase
 {
     /** @test */
-    function it_should_return_values_and_keys_in_reverse_order(): void
+    public function it_should_return_values_and_keys_in_reverse_order(): void
     {
         $input = new ArrayIterator([
             'one' => 1,
@@ -36,7 +36,7 @@ class ReverseIteratorTest extends TestCase
 
 
     /** @test */
-    function it_will_not_consume_input_iterator_on_creation(): void
+    public function it_will_not_consume_input_iterator_on_creation(): void
     {
         $consumed = false;
 
@@ -54,7 +54,7 @@ class ReverseIteratorTest extends TestCase
 
 
     /** @test */
-    function it_will_consume_input_only_once_and_return_same_values_and_keys_when_consumed_more_than_once(): void
+    public function it_will_consume_input_only_once_and_return_same_values_and_keys_when_consumed_more_than_once(): void
     {
         // Cannot rewind a generator that was already run
         $input = (function (): Generator {

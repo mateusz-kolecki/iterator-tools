@@ -11,10 +11,10 @@ use Iterator;
 use IteratorAggregate;
 use LimitIterator;
 use MK\IteratorTools\Iterator\CallbackMapIterator;
-use MK\IteratorTools\Iterator\IteratorConvertingTrait;
 use MK\IteratorTools\Iterator\ReverseIterator;
 use Traversable;
 use function iterator_to_array;
+use function MK\IteratorTools\Iterator\iterator_from;
 
 /**
  * @psalm-template K
@@ -22,8 +22,6 @@ use function iterator_to_array;
  */
 class IteratorStream implements IteratorAggregate
 {
-    use IteratorConvertingTrait;
-
     /**
      * @psalm-var Traversable<K,V>
      */
@@ -54,7 +52,7 @@ class IteratorStream implements IteratorAggregate
      */
     public static function from(iterable $iterable): self
     {
-        return new self(self::toIterator($iterable));
+        return new self(iterator_from($iterable));
     }
 
     /**
@@ -68,8 +66,8 @@ class IteratorStream implements IteratorAggregate
     {
         $appendIterator = new AppendIterator();
 
-        $appendIterator->append(self::toIterator($this->innerTraversable));
-        $appendIterator->append(self::toIterator($iterable));
+        $appendIterator->append(iterator_from($this->innerTraversable));
+        $appendIterator->append(iterator_from($iterable));
 
         return new self($appendIterator);
     }
@@ -82,7 +80,7 @@ class IteratorStream implements IteratorAggregate
     {
         return new self(
             new CallbackFilterIterator(
-                self::toIterator($this->innerTraversable),
+                iterator_from($this->innerTraversable),
                 $callback
             )
         );
@@ -98,7 +96,7 @@ class IteratorStream implements IteratorAggregate
     {
         /** @psalm-var Iterator<K,R> $mapIterator */
         $mapIterator = new CallbackMapIterator(
-            self::toIterator($this->innerTraversable),
+            iterator_from($this->innerTraversable),
             $callback
         );
 
@@ -115,7 +113,7 @@ class IteratorStream implements IteratorAggregate
     {
         /** @psalm-var Iterator<K,R> $mapIterator */
         $mapIterator = new CallbackMapIterator(
-            self::toIterator($this->innerTraversable),
+            iterator_from($this->innerTraversable),
             /**
              * @psalm-param V $value
              */
@@ -135,10 +133,10 @@ class IteratorStream implements IteratorAggregate
      *
      * @psalm-return S
      */
-    public function reduce($accumulator,callable $callback)
+    public function reduce($accumulator, callable $callback)
     {
         foreach ($this->innerTraversable as $key => $value) {
-            $accumulator = $callback($value,$accumulator,$key);
+            $accumulator = $callback($value, $accumulator, $key);
         }
 
         return $accumulator;
@@ -163,7 +161,7 @@ class IteratorStream implements IteratorAggregate
     {
         return new self(
             new LimitIterator(
-                self::toIterator($this->innerTraversable),
+                iterator_from($this->innerTraversable),
                 0,
                 $count
             )
@@ -177,7 +175,7 @@ class IteratorStream implements IteratorAggregate
     {
         return new self(
             new LimitIterator(
-                self::toIterator($this->innerTraversable),
+                iterator_from($this->innerTraversable),
                 $count
             )
         );
@@ -199,7 +197,7 @@ class IteratorStream implements IteratorAggregate
      */
     public function getIterator(): Iterator
     {
-        return self::toIterator($this->innerTraversable);
+        return iterator_from($this->innerTraversable);
     }
 
     /**
@@ -207,7 +205,7 @@ class IteratorStream implements IteratorAggregate
      */
     public function toArrayPreserveKeys(): array
     {
-        return iterator_to_array($this->innerTraversable,true);
+        return iterator_to_array($this->innerTraversable, true);
     }
 
     /**
@@ -215,6 +213,6 @@ class IteratorStream implements IteratorAggregate
      */
     public function toArray(): array
     {
-        return iterator_to_array($this->innerTraversable,false);
+        return iterator_to_array($this->innerTraversable, false);
     }
 }

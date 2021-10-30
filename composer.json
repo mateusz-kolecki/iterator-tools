@@ -15,7 +15,8 @@
   "require-dev": {
     "phpunit/phpunit": "^9.5",
     "vimeo/psalm": "^4.10",
-    "psalm/plugin-phpunit": "^0.16.1"
+    "psalm/plugin-phpunit": "^0.16.1",
+    "friendsofphp/php-cs-fixer": "^3.2"
   },
   "autoload": {
     "psr-4": {
@@ -23,6 +24,9 @@
     }
   },
   "autoload-dev": {
+    "files": [
+      "src/Iterator/functions.php"
+    ],
     "psr-4": {
       "MK\\IteratorTools\\": "tests/"
     }

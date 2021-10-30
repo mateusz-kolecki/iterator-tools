@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 class IteratorStreamTest extends TestCase
 {
     /** @test */
-    function it_should_append_after_map(): void
+    public function it_should_append_after_map(): void
     {
         $stream = IteratorStream::empty()
             ->append([1, 2, 3])
@@ -30,7 +30,7 @@ class IteratorStreamTest extends TestCase
     }
 
     /** @test */
-    function it_should_append_after_filter(): void
+    public function it_should_append_after_filter(): void
     {
         $stream = IteratorStream::from(['a'])
             ->append(['del_1', 'keep_2', 'del_3', 'keep_4'])
@@ -61,7 +61,7 @@ class IteratorStreamTest extends TestCase
 
 
     /** @test */
-    function it_should_preserve_original_keys(): void
+    public function it_should_preserve_original_keys(): void
     {
         $stream = IteratorStream::empty()
             ->append([
@@ -95,7 +95,7 @@ class IteratorStreamTest extends TestCase
 
 
     /** @test */
-    function it_should_return_same_starting_state_when_redicing_empty_iterator(): void
+    public function it_should_return_same_starting_state_when_redicing_empty_iterator(): void
     {
         $stream = IteratorStream::empty();
 
@@ -108,7 +108,7 @@ class IteratorStreamTest extends TestCase
 
 
     /** @test */
-    function it_should_call_callback_for_each_item_and_return_last_result(): void
+    public function it_should_call_callback_for_each_item_and_return_last_result(): void
     {
         $stream = IteratorStream::from(['Hello', 'World']);
 
@@ -120,7 +120,7 @@ class IteratorStreamTest extends TestCase
     }
 
     /** @test */
-    function it_should_return_items_in_reverse_order(): void
+    public function it_should_return_items_in_reverse_order(): void
     {
         $stream = IteratorStream::from([
             1 => 'one',
@@ -142,7 +142,7 @@ class IteratorStreamTest extends TestCase
 
 
     /** @test */
-    function it_should_reverse_after_mapping_filtering_and_append(): void
+    public function it_should_reverse_after_mapping_filtering_and_append(): void
     {
         $stream = IteratorStream::empty()
             ->append([
@@ -172,7 +172,7 @@ class IteratorStreamTest extends TestCase
     }
 
     /** @test */
-    function it_should_limit_the_result(): void
+    public function it_should_limit_the_result(): void
     {
         $stream = IteratorStream::empty()
             ->append([
@@ -197,7 +197,7 @@ class IteratorStreamTest extends TestCase
     }
 
     /** @test */
-    function it_should_skip_the_result(): void
+    public function it_should_skip_the_result(): void
     {
         $stream = IteratorStream::empty()
             ->append([

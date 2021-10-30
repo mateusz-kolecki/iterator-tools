@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 class ConsumerTest extends TestCase
 {
     /** @test */
-    function it_should_compute_int_sum(): void
+    public function it_should_compute_int_sum(): void
     {
         $stream = IteratorStream::from([1, 2]);
 
@@ -20,7 +20,7 @@ class ConsumerTest extends TestCase
     }
 
     /** @test */
-    function it_should_compute_float_sum(): void
+    public function it_should_compute_float_sum(): void
     {
         $stream = IteratorStream::from([1.0, 2.0]);
 
@@ -30,7 +30,7 @@ class ConsumerTest extends TestCase
     }
 
     /** @test */
-    function it_should_compute_float_average(): void
+    public function it_should_compute_float_average(): void
     {
         $stream = IteratorStream::from([2.0, 4.0]);
 
@@ -40,7 +40,7 @@ class ConsumerTest extends TestCase
     }
 
     /** @test */
-    function it_should_group_by_values_from_callback(): void
+    public function it_should_group_by_values_from_callback(): void
     {
         $people = [
             0 => new Person('Adam', 35),

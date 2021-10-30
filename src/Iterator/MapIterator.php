@@ -15,8 +15,6 @@ use Iterator;
  */
 abstract class MapIterator implements Iterator
 {
-    use IteratorConvertingTrait;
-
     /**
      * @psalm-var Iterator<K,V>
      */
