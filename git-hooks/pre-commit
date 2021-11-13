@@ -6,28 +6,41 @@ GREEN='\033[0;32m'
 NO_COLOR='\033[0m'
 
 declare -A checks=(
-    [php-cs-fixer]="vendor/bin/php-cs-fixer fix --diff"
+    [php-cs-fixer]="vendor/bin/php-cs-fixer fix --diff --dry-run"
     [Psalm]="vendor/bin/psalm --no-cache"
     [PHPUnit]="vendor/bin/phpunit --color --testdox"
 )
 
-echo ""
 
-for check_name in "${!checks[@]}"; do
-    echo -en "\rPerforming pre-commit check: ${check_name} ... "
+function perform_check {
+    local check_name="$1"
 
-    out=$(${checks[$check_name]} 2>&1)
+    printf "\r  > %-16s ... " ${check_name}
 
-    if [ $? -eq 0 ]; then
-        echo -e "${GREEN}success :)${NO_COLOR}"
-    else
+    local out=$(${checks[$check_name]} 2>&1)
+
+    if [ $? -ne 0 ]; then
         echo -e "${RED}failed!${NO_COLOR}"
         echo "---------------------------------------------------"
         echo "$out"
         echo "---------------------------------------------------"
         echo ""
+        return 1
+    fi
+
+    echo -e "${GREEN}success${NO_COLOR}"
+    return 0
+}
+
+echo ""
+echo "Starting checks:"
+
+for check_name in "${!checks[@]}"; do
+    if ! perform_check $check_name; then
         exit_status=1
     fi
 done
+
+echo ""
 
 exit $exit_status

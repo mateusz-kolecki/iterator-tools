@@ -12,6 +12,7 @@
         <directory name="tests" />
         <ignoreFiles>
             <directory name="vendor" />
+            <file name="./.php-cs-fixer.php" />
         </ignoreFiles>
     </projectFiles>
 
