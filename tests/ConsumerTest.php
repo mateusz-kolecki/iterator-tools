@@ -32,9 +32,9 @@ class ConsumerTest extends TestCase
     /** @test */
     public function it_should_compute_float_average(): void
     {
-        $stream = IteratorStream::from([2.0, 4.0]);
+        $stream = IteratorStream::from([2.0, 4]);
 
-        $sum = $stream->consume(Consumer::floatAverage());
+        $sum = $stream->consume(Consumer::average());
 
         $this->assertSame(3.0, $sum);
     }
@@ -49,13 +49,17 @@ class ConsumerTest extends TestCase
             3 => new Person('John', 28),
             4 => new Person('Mark', 46),
             5 => new Person('John', 62),
+
+            6 => new Person('Skip me', 62),
         ];
 
         $stream = IteratorStream::from($people);
 
 
         $map = $stream->consume(Consumer::groupBy(
-            fn (Person $person) => $person->name()
+            fn (Person $person) => ($person->name() !== 'Skip me'
+                ? $person->name()
+                : false)
         ));
 
 
@@ -71,6 +75,41 @@ class ConsumerTest extends TestCase
             'John' => [
                 $people[3],
                 $people[5],
+            ],
+        ];
+
+        $this->assertSame($expected, $map);
+    }
+    /** @test */
+    public function it_should_group_by_array_key(): void
+    {
+        $stream = IteratorStream::from([
+            ['name' => 'Adam', 'age' => 35],
+            ['name' => 'Mark', 'age' => 30],
+            ['name' => 'Adam', 'age' => 18],
+            ['name' => 'John', 'age' => 28],
+            ['name' => 'Mark', 'age' => 46],
+            ['name' => 'John', 'age' => 62],
+
+            ['not-a-name' => 'Foo'],
+        ]);
+
+
+        $map = $stream->consume(Consumer::groupByArrKey('name'));
+
+
+        $expected = [
+            'Adam' => [
+                ['name' => 'Adam', 'age' => 35],
+                ['name' => 'Adam', 'age' => 18],
+            ],
+            'Mark' => [
+                ['name' => 'Mark', 'age' => 30],
+                ['name' => 'Mark', 'age' => 46],
+            ],
+            'John' => [
+                ['name' => 'John', 'age' => 28],
+                ['name' => 'John', 'age' => 62],
             ],
         ];
 

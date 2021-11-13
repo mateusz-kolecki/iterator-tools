@@ -41,16 +41,16 @@ final class Consumer
     }
 
     /**
-     * @psalm-return callable(IteratorStream<mixed, float>):float
+     * @psalm-return callable(IteratorStream<mixed, int|float>):float
      */
-    public static function floatAverage(): callable
+    public static function average(): callable
     {
-        return function (IteratorStream $floatStream) {
+        return function (IteratorStream $stream) {
             $sum = 0.0;
             $count = 0;
 
-            foreach ($floatStream as $floatValue) {
-                $sum += $floatValue;
+            foreach ($stream as $number) {
+                $sum += $number;
                 $count += 1;
             }
 
@@ -62,7 +62,7 @@ final class Consumer
      * @psalm-template K
      * @psalm-template V
      *
-     * @psalm-param callable(V, K):string $callable
+     * @psalm-param callable(V, K):(string|false) $callable
      *
      * @psalm-return callable(IteratorStream<K,V>): array<string,list<V>>
      */
@@ -74,6 +74,10 @@ final class Consumer
             foreach ($stream as $key => $value) {
                 $groupBy = $callable($value, $key);
 
+                if ($groupBy === false) {
+                    continue;
+                }
+
                 if (!isset($map[$groupBy])) {
                     $map[$groupBy] = [];
                 }
@@ -83,5 +87,18 @@ final class Consumer
 
             return $map;
         };
+    }
+
+    /**
+     * @psalm-return callable(IteratorStream<mixed, array<string, mixed>>): array<string, list<array<string, mixed>>>
+     */
+    public static function groupByArrKey(string $groupKey): callable
+    {
+        return Consumer::groupBy(
+            /**
+             * @psalm-param array<string, mixed> $value
+             */
+            fn (array $value) => array_key_exists($groupKey, $value) ? (string)$value[$groupKey] : false
+        );
     }
 }
