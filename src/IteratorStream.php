@@ -14,7 +14,7 @@ use MK\IteratorTools\Iterator\CallbackMapIterator;
 use MK\IteratorTools\Iterator\ReverseIterator;
 use Traversable;
 use function iterator_to_array;
-use function MK\IteratorTools\Iterator\iterator_from;
+use function MK\IteratorTools\Iterator\iterator;
 
 /**
  * @psalm-template K
@@ -52,7 +52,7 @@ class IteratorStream implements IteratorAggregate
      */
     public static function from(iterable $iterable): self
     {
-        return new self(iterator_from($iterable));
+        return new self(iterator($iterable));
     }
 
     /**
@@ -66,8 +66,8 @@ class IteratorStream implements IteratorAggregate
     {
         $appendIterator = new AppendIterator();
 
-        $appendIterator->append(iterator_from($this->innerTraversable));
-        $appendIterator->append(iterator_from($iterable));
+        $appendIterator->append(iterator($this->innerTraversable));
+        $appendIterator->append(iterator($iterable));
 
         return new self($appendIterator);
     }
@@ -80,7 +80,7 @@ class IteratorStream implements IteratorAggregate
     {
         return new self(
             new CallbackFilterIterator(
-                iterator_from($this->innerTraversable),
+                iterator($this->innerTraversable),
                 $callback
             )
         );
@@ -96,7 +96,7 @@ class IteratorStream implements IteratorAggregate
     {
         /** @psalm-var Iterator<K,R> $mapIterator */
         $mapIterator = new CallbackMapIterator(
-            iterator_from($this->innerTraversable),
+            iterator($this->innerTraversable),
             $callback
         );
 
@@ -113,7 +113,7 @@ class IteratorStream implements IteratorAggregate
     {
         /** @psalm-var Iterator<K,R> $mapIterator */
         $mapIterator = new CallbackMapIterator(
-            iterator_from($this->innerTraversable),
+            iterator($this->innerTraversable),
             /**
              * @psalm-param V $value
              */
@@ -161,7 +161,7 @@ class IteratorStream implements IteratorAggregate
     {
         return new self(
             new LimitIterator(
-                iterator_from($this->innerTraversable),
+                iterator($this->innerTraversable),
                 0,
                 $count
             )
@@ -175,7 +175,7 @@ class IteratorStream implements IteratorAggregate
     {
         return new self(
             new LimitIterator(
-                iterator_from($this->innerTraversable),
+                iterator($this->innerTraversable),
                 $count
             )
         );
@@ -197,7 +197,7 @@ class IteratorStream implements IteratorAggregate
      */
     public function getIterator(): Iterator
     {
-        return iterator_from($this->innerTraversable);
+        return iterator($this->innerTraversable);
     }
 
     /**

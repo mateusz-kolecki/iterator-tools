@@ -6,13 +6,14 @@ namespace MK\IteratorTools;
 
 use MK\IteratorTools\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
+use function MK\IteratorTools\Iterator\stream;
 
 class ConsumerTest extends TestCase
 {
     /** @test */
     public function it_should_compute_int_sum(): void
     {
-        $stream = IteratorStream::from([1, 2]);
+        $stream = stream([1, 2]);
 
         $sum = $stream->consume(Consumer::intSum());
 
@@ -22,7 +23,7 @@ class ConsumerTest extends TestCase
     /** @test */
     public function it_should_compute_float_sum(): void
     {
-        $stream = IteratorStream::from([1.0, 2.0]);
+        $stream = stream([1.0, 2.0]);
 
         $sum = $stream->consume(Consumer::floatSum());
 
@@ -32,7 +33,7 @@ class ConsumerTest extends TestCase
     /** @test */
     public function it_should_compute_float_average(): void
     {
-        $stream = IteratorStream::from([2.0, 4]);
+        $stream = stream([2.0, 4]);
 
         $sum = $stream->consume(Consumer::average());
 
@@ -53,7 +54,7 @@ class ConsumerTest extends TestCase
             6 => new Person('Skip me', 62),
         ];
 
-        $stream = IteratorStream::from($people);
+        $stream = stream($people);
 
 
         $map = $stream->consume(Consumer::groupBy(
@@ -83,7 +84,7 @@ class ConsumerTest extends TestCase
     /** @test */
     public function it_should_group_by_array_key(): void
     {
-        $stream = IteratorStream::from([
+        $stream = stream([
             ['name' => 'Adam', 'age' => 35],
             ['name' => 'Mark', 'age' => 30],
             ['name' => 'Adam', 'age' => 18],

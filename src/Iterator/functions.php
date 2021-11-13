@@ -7,6 +7,7 @@ namespace MK\IteratorTools\Iterator;
 use ArrayIterator;
 use Iterator;
 use IteratorIterator;
+use MK\IteratorTools\IteratorStream;
 
 /**
  * @psalm-template K
@@ -15,7 +16,7 @@ use IteratorIterator;
  * @psalm-param  iterable<K,V> $iterable
  * @psalm-return Iterator<K,V>
  */
-function iterator_from(iterable $iterable): Iterator
+function iterator(iterable $iterable): Iterator
 {
     if (is_array($iterable)) {
         return new ArrayIterator($iterable);
@@ -26,4 +27,16 @@ function iterator_from(iterable $iterable): Iterator
     }
 
     return new IteratorIterator($iterable);
+}
+
+/**
+ * @psalm-template K
+ * @psalm-template V
+ *
+ * @psalm-param iterable<K,V> $iterable
+ * @psalm-return IteratorStream<K,V>
+ */
+function stream(iterable $iterable): IteratorStream
+{
+    return IteratorStream::from($iterable);
 }

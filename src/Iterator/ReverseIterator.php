@@ -46,7 +46,7 @@ class ReverseIterator implements Iterator
          */
 
         $this->traversable = new CallbackMapIterator(
-            iterator_from($traversable),
+            iterator($traversable),
             /**
              * @psalm-param V $value
              * @psalm-param K $key
