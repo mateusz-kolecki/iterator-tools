@@ -182,6 +182,19 @@ class IteratorStream implements IteratorAggregate
     }
 
     /**
+     * @psalm-param callable(V,K,Iterator<K,V>):bool $predicate
+     * @psalm-return Optional<V>
+     */
+    public function findAny(callable $predicate): Optional
+    {
+        foreach ($this->filter($predicate)->limit(1) as $v) {
+            return Optional::from($v);
+        }
+
+        return Optional::empty();
+    }
+
+    /**
      * @template R
      *
      * @psalm-param callable(self<K,V>):R $consumer

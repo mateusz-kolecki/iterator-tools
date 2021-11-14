@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace MK\IteratorTools;
 
 use ArrayIterator;
+use Exception;
+use MK\IteratorTools\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
+
+use function MK\IteratorTools\Iterator\stream;
 
 class IteratorStreamTest extends TestCase
 {
@@ -231,5 +235,55 @@ class IteratorStreamTest extends TestCase
             ->consume(Consumers::floatSum());
 
         $this->assertSame(3.0, $sum);
+    }
+
+    /** @test */
+    public function it_should_return_first_matching_element(): void
+    {
+        $people = [
+            0 => new Person('Nick', 10),
+            1 => new Person('Carl', 18),
+            2 => new Person('Jane', 25),
+            3 => new Person('Mark', 42),
+        ];
+
+        $result = stream($people)->findAny(
+            fn (Person $p) => $p->age() >= 25
+        );
+
+        $this->assertSame($people[2], $result->get());
+    }
+
+    /** @test */
+    public function it_should_stop_consuming_source_when_item_found(): void
+    {
+        $people = (function () {
+            yield 0 => new Person('Nick', 10);
+            yield 1 => new Person('Carl', 18);
+            yield 2 => new Person('Jane', 25);
+
+            throw new Exception('This should not happen!');
+        })();
+
+
+        $result = stream($people)->findAny(
+            fn (Person $p) => $p->age() >= 25
+        );
+
+        $this->assertSame('Jane', $result->get()->name());
+    }
+
+    /** @test */
+    public function it_should_return_null_when_item_not_found(): void
+    {
+        $people = [
+            new Person('Nick', 10),
+            new Person('Carl', 18),
+            new Person('Jane', 25),
+        ];
+
+        $result = stream($people)->findAny(fn () => false);
+
+        $this->assertFalse($result->isPresent());
     }
 }
