@@ -8,14 +8,14 @@ use MK\IteratorTools\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
 use function MK\IteratorTools\Iterator\stream;
 
-class ConsumerTest extends TestCase
+class ConsumersTest extends TestCase
 {
     /** @test */
     public function it_should_compute_int_sum(): void
     {
         $stream = stream([1, 2]);
 
-        $sum = $stream->consume(Consumer::intSum());
+        $sum = $stream->consume(Consumers::intSum());
 
         $this->assertSame(3, $sum);
     }
@@ -25,7 +25,7 @@ class ConsumerTest extends TestCase
     {
         $stream = stream([1.0, 2.0]);
 
-        $sum = $stream->consume(Consumer::floatSum());
+        $sum = $stream->consume(Consumers::floatSum());
 
         $this->assertSame(3.0, $sum);
     }
@@ -35,7 +35,7 @@ class ConsumerTest extends TestCase
     {
         $stream = stream([2.0, 4]);
 
-        $sum = $stream->consume(Consumer::average());
+        $sum = $stream->consume(Consumers::average());
 
         $this->assertSame(3.0, $sum);
     }
@@ -50,19 +50,11 @@ class ConsumerTest extends TestCase
             3 => new Person('John', 28),
             4 => new Person('Mark', 46),
             5 => new Person('John', 62),
-
-            6 => new Person('Skip me', 62),
         ];
 
-        $stream = stream($people);
-
-
-        $map = $stream->consume(Consumer::groupBy(
-            fn (Person $person) => ($person->name() !== 'Skip me'
-                ? $person->name()
-                : false)
-        ));
-
+        $map = stream($people)->consume(
+            Consumers::groupBy(fn (Person $p) => $p->name())
+        );
 
         $expected = [
             'Adam' => [
@@ -81,8 +73,51 @@ class ConsumerTest extends TestCase
 
         $this->assertSame($expected, $map);
     }
+
     /** @test */
-    public function it_should_group_by_array_key(): void
+    public function it_should_skip_when_group_by_value_is_false(): void
+    {
+        $people = [
+            0 => new Person('Adam', 35),
+            1 => new Person('Mark', 30),
+            2 => new Person('Adam', 18),
+            3 => new Person('John', 28),
+            4 => new Person('Mark', 46),
+            5 => new Person('John', 62),
+
+            6 => new Person('skip me', 100),
+        ];
+
+        $map = stream($people)->consume(
+            Consumers::groupBy(function (Person $p) {
+                if ($p->name() === 'skip me') {
+                    return false;
+                }
+
+                return $p->name();
+            })
+        );
+
+        $expected = [
+            'Adam' => [
+                $people[0],
+                $people[2],
+            ],
+            'Mark' => [
+                $people[1],
+                $people[4],
+            ],
+            'John' => [
+                $people[3],
+                $people[5],
+            ],
+        ];
+
+        $this->assertSame($expected, $map);
+    }
+
+    /** @test */
+    public function it_should_group_by_array_key_skipping_items_not_containing_given_key(): void
     {
         $stream = stream([
             ['name' => 'Adam', 'age' => 35],
@@ -96,7 +131,7 @@ class ConsumerTest extends TestCase
         ]);
 
 
-        $map = $stream->consume(Consumer::groupByArrKey('name'));
+        $map = $stream->consume(Consumers::groupByArrKey('name'));
 
 
         $expected = [
@@ -115,5 +150,25 @@ class ConsumerTest extends TestCase
         ];
 
         $this->assertSame($expected, $map);
+    }
+
+    /** @test */
+    public function it_should_join_string_elements(): void
+    {
+        $stream = stream(['foo', 'bar', 'baz', 'qux']);
+
+        $result = $stream->consume(Consumers::join());
+
+        $this->assertSame('foobarbazqux', $result);
+    }
+
+    /** @test */
+    public function it_should_join_string_elements_using_delimiter(): void
+    {
+        $stream = stream(['foo', 'bar', 'baz', 'qux']);
+
+        $result = $stream->consume(Consumers::join('--'));
+
+        $this->assertSame('foo--bar--baz--qux', $result);
     }
 }

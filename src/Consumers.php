@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace MK\IteratorTools;
 
 use Exception;
-use Traversable;
+use function implode;
 
-final class Consumer
+final class Consumers
 {
     private function __construct()
     {
@@ -94,11 +94,36 @@ final class Consumer
      */
     public static function groupByArrKey(string $groupKey): callable
     {
-        return Consumer::groupBy(
+        return Consumers::groupBy(
             /**
              * @psalm-param array<string, mixed> $value
              */
             fn (array $value) => array_key_exists($groupKey, $value) ? (string)$value[$groupKey] : false
         );
+    }
+
+    /**
+     * @psalm-return callable(IteratorStream<mixed, string>):string
+     */
+    public static function join(string $delimiter = ''): callable
+    {
+        return function (IteratorStream $stream) use ($delimiter): string {
+            $iterator = $stream->getIterator();
+            $iterator->rewind();
+
+            if (!$iterator->valid()) {
+                return '';
+            }
+
+            $output = $iterator->current();
+            $iterator->next();
+
+            while ($iterator->valid()) {
+                $output .= $delimiter . $iterator->current();
+                $iterator->next();
+            }
+
+            return $output;
+        };
     }
 }

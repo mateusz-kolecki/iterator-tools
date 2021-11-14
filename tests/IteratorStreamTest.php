@@ -228,7 +228,7 @@ class IteratorStreamTest extends TestCase
             ->filter(function () {
                 return true;
             })
-            ->consume(Consumer::floatSum());
+            ->consume(Consumers::floatSum());
 
         $this->assertSame(3.0, $sum);
     }
