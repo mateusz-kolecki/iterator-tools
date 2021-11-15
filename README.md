@@ -40,7 +40,7 @@ $total = IteratorStream::from($csvReader)
     // (here $csvReader is consumed; one row from file
     // at a time is filtered, mapped and then summed)
     // This line returns integer value.
-    ->consume(Consumers:intSum());
+    ->consume(Consumers::intSum());
 ```
 
 ## Install using Composer:
