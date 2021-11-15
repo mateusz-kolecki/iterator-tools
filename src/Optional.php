@@ -24,6 +24,7 @@ class Optional
 
     /**
      * @psalm-template V
+     *
      * @psalm-return self<V>
      */
     public static function empty(): self
@@ -33,7 +34,8 @@ class Optional
 
     /**
      * @psalm-template V
-     * @psalm-param V $value
+     *
+     * @psalm-param ?V $value
      * @psalm-return self<V>
      */
     public static function from($value): self
@@ -47,7 +49,7 @@ class Optional
      */
     public function orElse($alternative)
     {
-        if (null === $this->value) {
+        if (!$this->isPresent()) {
             return $alternative;
         }
 
@@ -56,11 +58,12 @@ class Optional
 
     /**
      * @psalm-return T
+     * @throws NotFoundException
      */
     public function get()
     {
-        if (null === $this->value) {
-            throw new \Exception();
+        if (!$this->isPresent()) {
+            throw new NotFoundException();
         }
 
         return $this->value;
