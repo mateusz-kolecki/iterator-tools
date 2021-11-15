@@ -17,12 +17,12 @@ function perform_check {
 
     printf "\r  > %-16s ... " ${check_name}
 
-    local out=$(${checks[$check_name]} 2>&1)
+    OUTPUT=$(${checks[$check_name]} 2>&1)
 
     if [ $? -ne 0 ]; then
         echo -e "${RED}failed!${NO_COLOR}"
         echo "---------------------------------------------------"
-        echo "$out"
+        echo "$OUTPUT"
         echo "---------------------------------------------------"
         echo ""
         return 1
