@@ -38,5 +38,9 @@ function iterator(iterable $iterable): Iterator
  */
 function stream(iterable $iterable): IteratorStream
 {
+    if ([] === $iterable) {
+        return IteratorStream::empty();
+    }
+
     return IteratorStream::from($iterable);
 }

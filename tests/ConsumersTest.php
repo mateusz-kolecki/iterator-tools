@@ -6,6 +6,13 @@ namespace MK\IteratorTools;
 
 use MK\IteratorTools\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
+
+use function MK\IteratorTools\Consumers\float_average;
+use function MK\IteratorTools\Consumers\float_sum;
+use function MK\IteratorTools\Consumers\group_by;
+use function MK\IteratorTools\Consumers\group_by_arr_key;
+use function MK\IteratorTools\Consumers\int_sum;
+use function MK\IteratorTools\Consumers\str_join;
 use function MK\IteratorTools\Iterator\stream;
 
 class ConsumersTest extends TestCase
@@ -15,7 +22,7 @@ class ConsumersTest extends TestCase
     {
         $stream = stream([1, 2]);
 
-        $sum = $stream->consume(Consumers::intSum());
+        $sum = $stream->consume(int_sum());
 
         $this->assertSame(3, $sum);
     }
@@ -25,7 +32,7 @@ class ConsumersTest extends TestCase
     {
         $stream = stream([1.0, 2.0]);
 
-        $sum = $stream->consume(Consumers::floatSum());
+        $sum = $stream->consume(float_sum());
 
         $this->assertSame(3.0, $sum);
     }
@@ -35,7 +42,7 @@ class ConsumersTest extends TestCase
     {
         $stream = stream([2.0, 4]);
 
-        $sum = $stream->consume(Consumers::average());
+        $sum = $stream->consume(float_average());
 
         $this->assertSame(3.0, $sum);
     }
@@ -53,7 +60,7 @@ class ConsumersTest extends TestCase
         ];
 
         $map = stream($people)->consume(
-            Consumers::groupBy(fn (Person $p) => $p->name())
+            group_by(fn (Person $p) => $p->name())
         );
 
         $expected = [
@@ -89,7 +96,7 @@ class ConsumersTest extends TestCase
         ];
 
         $map = stream($people)->consume(
-            Consumers::groupBy(function (Person $p) {
+            group_by(function (Person $p) {
                 if ($p->name() === 'skip me') {
                     return false;
                 }
@@ -131,7 +138,7 @@ class ConsumersTest extends TestCase
         ]);
 
 
-        $map = $stream->consume(Consumers::groupByArrKey('name'));
+        $map = $stream->consume(group_by_arr_key('name'));
 
 
         $expected = [
@@ -157,7 +164,7 @@ class ConsumersTest extends TestCase
     {
         $stream = stream(['foo', 'bar', 'baz', 'qux']);
 
-        $result = $stream->consume(Consumers::join());
+        $result = $stream->consume(str_join());
 
         $this->assertSame('foobarbazqux', $result);
     }
@@ -167,8 +174,33 @@ class ConsumersTest extends TestCase
     {
         $stream = stream(['foo', 'bar', 'baz', 'qux']);
 
-        $result = $stream->consume(Consumers::join('--'));
+        $result = $stream->consume(str_join('--'));
 
         $this->assertSame('foo--bar--baz--qux', $result);
+    }
+
+    /**
+     * @test
+     * @dataProvider delimiterDataProvider
+     */
+    public function it_should_return_empty_string_when_joining_empty_stream(
+        string $delimiter
+    ): void {
+        $stream = stream([]);
+
+        $result = $stream->consume(str_join($delimiter));
+
+        $this->assertSame('', $result);
+    }
+
+    /**
+     * @psalm-return array{string}[]
+     */
+    public function delimiterDataProvider(): array
+    {
+        return [
+            [''],
+            ['--'],
+        ];
     }
 }

@@ -19,6 +19,8 @@ use function MK\IteratorTools\Iterator\iterator;
 /**
  * @psalm-template K
  * @psalm-template V
+ *
+ * @template-implements IteratorAggregate<K,V>
  */
 class IteratorStream implements IteratorAggregate
 {

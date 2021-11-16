@@ -9,6 +9,7 @@ use Exception;
 use MK\IteratorTools\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
 
+use function MK\IteratorTools\Consumers\float_sum;
 use function MK\IteratorTools\Iterator\stream;
 
 class IteratorStreamTest extends TestCase
@@ -232,7 +233,7 @@ class IteratorStreamTest extends TestCase
             ->filter(function () {
                 return true;
             })
-            ->consume(Consumers::floatSum());
+            ->consume(float_sum());
 
         $this->assertSame(3.0, $sum);
     }

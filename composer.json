@@ -19,14 +19,15 @@
     "friendsofphp/php-cs-fixer": "^3.2"
   },
   "autoload": {
+    "files": [
+      "src/Iterator/functions.php",
+      "src/Consumers/functions.php"
+    ],
     "psr-4": {
       "MK\\IteratorTools\\": "src/"
     }
   },
   "autoload-dev": {
-    "files": [
-      "src/Iterator/functions.php"
-    ],
     "psr-4": {
       "MK\\IteratorTools\\": "tests/"
     }
