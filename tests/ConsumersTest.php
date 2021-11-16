@@ -172,11 +172,17 @@ class ConsumersTest extends TestCase
     /** @test */
     public function it_should_join_string_elements_using_delimiter(): void
     {
-        $stream = stream(['foo', 'bar', 'baz', 'qux']);
+        $stringable = new class {
+            function __toString(): string {
+                return 'Stringable';
+            }
+        };
+
+        $stream = stream(['foo', 'bar', 'baz', 'qux', $stringable]);
 
         $result = $stream->consume(str_join('--'));
 
-        $this->assertSame('foo--bar--baz--qux', $result);
+        $this->assertSame('foo--bar--baz--qux--Stringable', $result);
     }
 
     /**
