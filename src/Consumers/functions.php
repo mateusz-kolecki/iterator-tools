@@ -102,7 +102,7 @@ function group_by_arr_key(string $groupKey): callable
 }
 
 /**
- * @psalm-return callable(IteratorStream<mixed, string>):string
+ * @psalm-return callable(IteratorStream<mixed, string|\Stringable>):string
  */
 function str_join(string $delimiter = ''): callable
 {
@@ -114,11 +114,11 @@ function str_join(string $delimiter = ''): callable
             return '';
         }
 
-        $output = $iterator->current();
+        $output = (string)$iterator->current();
         $iterator->next();
 
         while ($iterator->valid()) {
-            $output .= $delimiter . $iterator->current();
+            $output .= $delimiter . (string)$iterator->current();
             $iterator->next();
         }
 
