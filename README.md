@@ -19,11 +19,21 @@ at once - each key, value pair returned by source iterator is passed by multiple
 ```php
 <?php
 
-$csvReader = CsvReader::fromFile('large-file.csv')->assocArrays();
+use ThirdPartyLibrary\CsvReader;
+
+use function MK\IteratorTools\Iterator\stream;
+use function MK\IteratorTools\Consumers\int_sum;
+
+// First you need an iterable source from which you can create a stream
+
+/** @psalm-var \Iterator<array<string, mixed>> $source */ 
+$source = CsvReader::fromFile('large-file.csv')->assocArrays();
+
+// Some helper object
 $yesterday = new DateTime('yesterday');
 
-// Here we create a "stream" using $csvReader iterator as a source
-$total = IteratorStream::from($csvReader)
+// Here we create a "stream" using $source Iterator
+$total = stream($source)
 
     // First we tell that we want to filter all rows by date
     // (no iteration is happening at this moment)
@@ -40,7 +50,7 @@ $total = IteratorStream::from($csvReader)
     // (here $csvReader is consumed; one row from file
     // at a time is filtered, mapped and then summed)
     // This line returns integer value.
-    ->consume(Consumers::intSum());
+    ->consume(int_sum());
 ```
 
 ## Install using Composer:
