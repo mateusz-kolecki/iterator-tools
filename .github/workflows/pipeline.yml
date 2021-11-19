@@ -26,6 +26,11 @@ jobs:
 
     - uses: actions/checkout@v2
 
+    - name: Show PHP version and modules
+      run: |
+        php -v
+        php -m
+
     - name: Install dependencies
       run: ${{ matrix.composer_update }}
 
