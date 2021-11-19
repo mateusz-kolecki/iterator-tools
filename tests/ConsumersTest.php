@@ -6,7 +6,6 @@ namespace MK\IteratorTools;
 
 use MK\IteratorTools\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
-
 use function MK\IteratorTools\Consumers\float_average;
 use function MK\IteratorTools\Consumers\float_sum;
 use function MK\IteratorTools\Consumers\group_by;
@@ -97,7 +96,7 @@ class ConsumersTest extends TestCase
 
         $map = stream($people)->consume(
             group_by(function (Person $p) {
-                if ($p->name() === 'skip me') {
+                if ('skip me' === $p->name()) {
                     return false;
                 }
 
@@ -172,8 +171,9 @@ class ConsumersTest extends TestCase
     /** @test */
     public function it_should_join_string_elements_using_delimiter(): void
     {
-        $stringable = new class {
-            function __toString(): string {
+        $stringable = new class () {
+            public function __toString(): string
+            {
                 return 'Stringable';
             }
         };

@@ -66,7 +66,7 @@ function group_by(callable $callable): callable
         foreach ($stream as $key => $value) {
             $groupBy = $callable($value, $key);
 
-            if ($groupBy === false) {
+            if (false === $groupBy) {
                 continue;
             }
 

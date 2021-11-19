@@ -41,7 +41,7 @@ class IteratorStreamTest extends TestCase
             ->append(['del_1', 'keep_2', 'del_3', 'keep_4'])
 
             ->filter(function (string $s): bool {
-                return substr($s, 0, 4) === 'keep';
+                return 'keep' === substr($s, 0, 4);
             })
 
             ->map(function (string $s): string {
@@ -161,7 +161,7 @@ class IteratorStreamTest extends TestCase
             })
 
             ->filter(function (string $str): bool {
-                return $str[0] === 'T';
+                return 'T' === $str[0];
             })
 
             ->reverse();
@@ -249,7 +249,7 @@ class IteratorStreamTest extends TestCase
         ];
 
         $result = stream($people)->findAny(
-            fn (Person $p) => $p->age() >= 25
+            fn (Person $p) => 25 <= $p->age()
         );
 
         $this->assertSame($people[2], $result->get());
@@ -268,7 +268,7 @@ class IteratorStreamTest extends TestCase
 
 
         $result = stream($people)->findAny(
-            fn (Person $p) => $p->age() >= 25
+            fn (Person $p) => 25 <= $p->age()
         );
 
         $this->assertSame('Jane', $result->get()->name());
