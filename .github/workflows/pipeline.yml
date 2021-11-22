@@ -24,6 +24,9 @@ jobs:
       with:
         php-version: ${{ matrix.php }}
 
+    - name: Upgrade libpcre2-8-0
+      run: sudo apt update && sudo apt install -y libpcre2-8-0
+
     - uses: actions/checkout@v2
 
     - name: Show PHP version and modules
