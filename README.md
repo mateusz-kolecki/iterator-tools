@@ -1,5 +1,9 @@
 # Iterator Tools
 
+![Build status](https://github.com/mateusz-kolecki/iterator-tools/actions/workflows/pipeline.yml/badge.svg?branch=master)
+
+---
+
 **Work in progress!**
 
 This library is in an early stage of development. It is not ready for production usage.
