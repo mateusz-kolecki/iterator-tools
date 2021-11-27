@@ -40,7 +40,7 @@ jobs:
     - name: Run Unit tests
       run: vendor/bin/phpunit --color --testdox
 
-    - name: Static analysys - Psalm
+    - name: Static analysis - Psalm
       run: vendor/bin/psalm --no-cache
     
     - name: Check coding standards
