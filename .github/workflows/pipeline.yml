@@ -42,3 +42,4 @@ jobs:
     
     - name: Check coding standards
       run: vendor/bin/php-cs-fixer fix --diff --allow-risky=yes --dry-run
+      if: matrix.php != '8.1'
