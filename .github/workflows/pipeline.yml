@@ -20,13 +20,10 @@ jobs:
     steps:
     
     - name: Setup PHP environment
-      uses: nanasess/setup-php@v3.0.8
+      uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php }}
-
-    - name: Upgrade libpcre2-8-0
-      run: sudo apt update && sudo apt install -y libpcre2-8-0
-
+    
     - uses: actions/checkout@v2
 
     - name: Show PHP version and modules
