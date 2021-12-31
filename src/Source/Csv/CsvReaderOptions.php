@@ -189,7 +189,10 @@ class CsvReaderOptions
         return $clone;
     }
 
-    public function withDateColumn(int|string $column, string $format): self
+    /**
+     * @psalm-param int|string $column
+     */
+    public function withDateColumn($column, string $format): self
     {
         return $this->withDateColumns([$column => $format]);
     }
