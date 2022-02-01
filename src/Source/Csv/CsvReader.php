@@ -74,7 +74,21 @@ class CsvReader
     }
 
     /**
-     * @param string|resource $from
+     * Create CsvReader instance reading from file or from resource handle.
+     *
+     * When CsvReader is created from string (file path or URL) then the file
+     * is opened and closed automatically. fclose() is called when CsvReader
+     * instance is destructed.
+     * When CsvReader is created from resource (PHP stream) then the handler
+     * is not closed when CsvRead is destructed and handler must be closed
+     * manually with fclose().
+     *
+     * @param string|resource $from when string then it should be file path
+     * or URL (anything that can be opened with fopen() function).
+     * When resource then it should be valid PHP stream handler (created by fopen())
+     *
+     * @param CsvReaderOptions $options instance of CsvReaderOptions or null to use defaults
+     * @throws InvalidArgumentException when first argument is not a string or handler
      */
     public static function from($from, CsvReaderOptions $options = null): self
     {
@@ -137,7 +151,12 @@ class CsvReader
     }
 
     /**
+     * Apply transformations to the IteratorStream
+     *
+     * @param IteratorStream $stream stream representing CSV source (file of handler)
      * @psalm-param IteratorStream<array-key, array<string|int, string>> $stream
+     *
+     * @return IteratorStream stream with transformations applied
      * @psalm-return IteratorStream<array-key, array<string|int, string|int|float|null|\DateTimeInterface>>
      */
     protected function applyTransformations(IteratorStream $stream): IteratorStream
@@ -156,6 +175,12 @@ class CsvReader
     }
 
     /**
+     * Read all lines from CSV source (file or handler) as lists
+     *
+     * Read all lines and yield each row as a list (indexed array).
+     * First field from the CSV line is under index 0, second filed is under 2, and so on.
+     *
+     * @return IteratorStream stream of indexed arrays
      * @psalm-return IteratorStream<array-key, array<array-key, string|int|float|null|\DateTimeInterface>>
      */
     public function read(): IteratorStream
@@ -194,6 +219,13 @@ class CsvReader
     }
 
     /**
+     * Read all lines as assoc arrays using first row as keys
+     *
+     * Read all lines and yield each row as assoc array where first row from
+     * the CSV source is used to prepare keys. The first row is not included in
+     * the result and is used only as a header.
+     *
+     * @return IteratorStream stream of assoc arrays
      * @psalm-return IteratorStream<array-key, array<array-key, string|int|float|null|\DateTimeInterface>>
      */
     public function readAssoc(): IteratorStream

@@ -21,12 +21,24 @@ class CsvReaderOptions
     {
     }
 
+    /**
+     * Create options object with default settings.
+     */
     public static function defaults(): self
     {
         return new self();
     }
 
     /**
+     * Create CsvReaderOptions using assoc array.
+     *
+     * Recreate options from assoc array (that can be produced by calling toArray() method).
+     * Should be used to restore options form persistent storage (example: array coming from a config).
+     *
+     * @param array $array input array with all keys being optional: max_line_length, separator, enclosure, escape, convert_numerics, date_columns
+     *
+     * @see: CsvReaderOptions::toArray()
+     *
      * @psalm-param array{
      *    max_line_length?: int,
      *    separator?: string,
@@ -35,6 +47,8 @@ class CsvReaderOptions
      *    convert_numerics?: bool,
      *    date_columns?: array<array-key, string>
      * } $array
+     *
+     * @return self
      */
     public static function fromArray(array $array): self
     {
@@ -70,6 +84,15 @@ class CsvReaderOptions
     }
 
     /**
+     * Create assoc array representation of this options object.
+     *
+     * Should be used when options object settings must be preserved in storage (example: in config)
+     * Array can be consumed by fromArray() method to hydrate new options instance.
+     *
+     * @see: CsvReaderOptions::toArray()
+     *
+     * @return array
+     *
      * @psalm-return array{
      *    max_line_length: int,
      *    separator: string,
@@ -124,6 +147,10 @@ class CsvReaderOptions
         return $this->dateColumns;
     }
 
+
+    /**
+     * Create new options object with new max line length
+     */
     public function withMaxLineLength(int $maxLineLength): self
     {
         if (0 > $maxLineLength) {
@@ -135,6 +162,9 @@ class CsvReaderOptions
         return $clone;
     }
 
+    /**
+     * Create new options object with new separator
+     */
     public function withSeparator(string $separator): self
     {
         if (1 < strlen($separator) || empty($separator)) {
@@ -146,6 +176,9 @@ class CsvReaderOptions
         return $clone;
     }
 
+    /**
+     * Create new options object with new enclosure
+     */
     public function withEnclosure(string $enclosure): self
     {
         if (1 < strlen($enclosure) || empty($enclosure)) {
@@ -157,6 +190,9 @@ class CsvReaderOptions
         return $clone;
     }
 
+    /**
+     * Create new options object with new escape character
+     */
     public function withEscape(string $escape): self
     {
         if (1 < strlen($escape)) {
@@ -168,6 +204,9 @@ class CsvReaderOptions
         return $clone;
     }
 
+    /**
+     * Create new options object with new convert numerics setting
+     */
     public function withConvertNumerics(bool $convertNumerics): self
     {
         $clone = clone $this;
@@ -176,6 +215,8 @@ class CsvReaderOptions
     }
 
     /**
+     * Create new options object with new date columns
+     *
      * @psalm-param array<int|string, string> $columns
      */
     public function withDateColumns(array $columns): self
@@ -190,7 +231,10 @@ class CsvReaderOptions
     }
 
     /**
-     * @psalm-param int|string $column
+     * Create new options object with added date column
+     *
+     * @param int|string $column numerical index or string representing date column in the CSV source
+     * @param string $format date format used to parse column value
      */
     public function withDateColumn($column, string $format): self
     {
