@@ -16,13 +16,13 @@ use Iterator;
 class CallbackMapIterator extends MapIterator
 {
     /**
-     * @psalm-var callable(V, K, Iterator<K,V>):R
+     * @psalm-var callable(V, K):R
      */
     private $callback;
 
     /**
      * @psalm-param Iterator<K, V> $traversable
-     * @psalm-param callable(V, K, Iterator<K, V>):R $callback
+     * @psalm-param callable(V, K):R $callback
      */
     public function __construct(Iterator $innerIterator, callable $callback)
     {
@@ -30,14 +30,8 @@ class CallbackMapIterator extends MapIterator
         $this->callback = $callback;
     }
 
-    /**
-     * @psalm-return R
-     */
-    public function current()
+    public function mapValue($value, $key)
     {
-        $value = $this->innerIterator->current();
-        $key = $this->innerIterator->key();
-
-        return ($this->callback)($value, $key, $this->innerIterator);
+        return ($this->callback)($value, $key);
     }
 }

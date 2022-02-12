@@ -18,10 +18,10 @@ abstract class MapIterator implements Iterator
     /**
      * @psalm-var Iterator<K,V>
      */
-    protected Iterator $innerIterator;
+    private Iterator $innerIterator;
 
     /**
-     * @psalm-param Iterator<K,V> $traversable
+     * @psalm-param Iterator<K,V> $iterable
      */
     public function __construct(Iterator $innerIterator)
     {
@@ -54,5 +54,18 @@ abstract class MapIterator implements Iterator
     /**
      * @psalm-return R
      */
-    abstract public function current();
+    public function current()
+    {
+        return $this->mapValue(
+            $this->innerIterator->current(),
+            $this->innerIterator->key(),
+        );
+    }
+
+    /**
+     * @psalm-param V $value
+     * @psalm-param K $key
+     * @psalm-return R
+     */
+    abstract public function mapValue($value, $key);
 }

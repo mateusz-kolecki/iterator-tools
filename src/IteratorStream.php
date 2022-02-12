@@ -91,7 +91,7 @@ class IteratorStream implements IteratorAggregate
     /**
      * @psalm-template R
      *
-     * @psalm-param  callable(V,K,Iterator<K,V>):R $callback
+     * @psalm-param  callable(V,K):R $callback
      * @psalm-return self<K,R>
      */
     public function map(callable $callback): self
