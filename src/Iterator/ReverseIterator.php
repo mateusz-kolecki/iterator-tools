@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace MK\IteratorTools\Iterator;
 
-use ArrayIterator;
 use EmptyIterator;
 use Iterator;
-use Traversable;
+use function array_reverse;
 
 /**
  * @psalm-template K
@@ -17,78 +16,72 @@ use Traversable;
  */
 class ReverseIterator implements Iterator
 {
-    /**
-     * @psalm-var Iterator<K, array{K, V}>
-     */
-    private Iterator $traversable;
+    /** @psalm-var Iterator<K, V> $original */
+    private Iterator $original;
+
+    /** @psalm-var Iterator<K> */
+    private Iterator $keys;
+
+    /** @psalm-var Iterator<V> */
+    private Iterator $values;
+
+    private bool $initialized = false;
 
     /**
-     * @psalm-var Iterator<int, array{K, V}>
+     * @psalm-param Iterator<K, V> $original
      */
-    private Iterator $reversed;
-
-    /**
-     * @psalm-param Traversable<K, V> $traversable
-     */
-    public function __construct(Traversable $traversable)
+    public function __construct(Iterator $original)
     {
-        /*
-         * There is no guarantee that incoming $traversable
-         * will produce unique keys so we must save all keys
-         * before doing iterator_to_array() and then then array_reverse().
-         *
-         * Example of non-unique keys scenario:
-         *
-         *   $traversable = new AppendIterator();
-         *   $traversable->append(new ArrayIterator([1,2,3]));
-         *   $traversable->append(new ArrayIterator([4,5,6]));
-         *   iterator_to_array($traversable, true); // [4, 5, 6]
-         */
-
-        $this->traversable = new CallbackMapIterator(
-            iterator($traversable),
-            /**
-             * @psalm-param V $value
-             * @psalm-param K $key
-             */
-            function ($value, $key) {
-                return [$key, $value];
-            }
-        );
-
-        $this->reversed = new EmptyIterator();
+        $this->original = $original;
+        $this->keys = new EmptyIterator();
+        $this->values = new EmptyIterator();
     }
 
     public function next(): void
     {
-        $this->reversed->next();
+        $this->keys->next();
+        $this->values->next();
     }
 
     public function valid(): bool
     {
-        return $this->reversed->valid();
+        return $this->keys->valid()
+            && $this->values->valid();
     }
 
     public function key()
     {
-        return $this->reversed->current()[0];
+        return $this->keys->current();
     }
 
     public function current()
     {
-        return $this->reversed->current()[1];
+        return $this->values->current();
     }
 
     public function rewind(): void
     {
-        if ($this->reversed instanceof EmptyIterator) {
-            $this->reversed = new ArrayIterator(
-                array_reverse(
-                    iterator_to_array($this->traversable, false)
-                )
-            );
+        if (false === $this->initialized) {
+            $this->original->rewind();
+            $this->revert();
+            $this->initialized = true;
         }
 
-        $this->reversed->rewind();
+        $this->keys->rewind();
+        $this->values->rewind();
+    }
+
+    private function revert(): void
+    {
+        $keys = [];
+        $values = [];
+
+        foreach ($this->original as $key => $value) {
+            $keys[] = $key;
+            $values[] = $value;
+        }
+
+        $this->keys = iterator(array_reverse($keys));
+        $this->values = iterator(array_reverse($values));
     }
 }

@@ -151,7 +151,7 @@ class IteratorStream implements IteratorAggregate
     {
         return new self(
             new ReverseIterator(
-                $this->innerTraversable
+                iterator($this->innerTraversable)
             )
         );
     }
