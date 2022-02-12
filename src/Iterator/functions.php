@@ -6,8 +6,10 @@ namespace MK\IteratorTools\Iterator;
 
 use ArrayIterator;
 use Iterator;
+use IteratorAggregate;
 use IteratorIterator;
 use MK\IteratorTools\IteratorStream;
+use function is_array;
 
 /**
  * @psalm-template K
@@ -24,6 +26,10 @@ function iterator(iterable $iterable): Iterator
 
     if ($iterable instanceof Iterator) {
         return $iterable;
+    }
+
+    if ($iterable instanceof IteratorAggregate) {
+        return iterator($iterable->getIterator());
     }
 
     return new IteratorIterator($iterable);
