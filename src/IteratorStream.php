@@ -12,7 +12,6 @@ use IteratorAggregate;
 use LimitIterator;
 use MK\IteratorTools\Iterator\CallbackMapIterator;
 use MK\IteratorTools\Iterator\ReverseIterator;
-use Traversable;
 use function iterator_to_array;
 use function MK\IteratorTools\Iterator\iterator;
 
@@ -25,16 +24,16 @@ use function MK\IteratorTools\Iterator\iterator;
 class IteratorStream implements IteratorAggregate
 {
     /**
-     * @psalm-var Traversable<K,V>
+     * @psalm-var Iterator<K,V>
      */
-    protected Traversable $innerTraversable;
+    protected Iterator $innerIterator;
 
     /**
-     * @psalm-param Traversable<K,V> $traversable
+     * @psalm-param Iterator<K,V> $iterator
      */
-    protected function __construct(Traversable $traversable)
+    protected function __construct(Iterator $iterator)
     {
-        $this->innerTraversable = $traversable;
+        $this->innerIterator = $iterator;
     }
 
     /**
@@ -68,7 +67,7 @@ class IteratorStream implements IteratorAggregate
     {
         $appendIterator = new AppendIterator();
 
-        $appendIterator->append(iterator($this->innerTraversable));
+        $appendIterator->append($this->innerIterator);
         $appendIterator->append(iterator($iterable));
 
         return new self($appendIterator);
@@ -82,7 +81,7 @@ class IteratorStream implements IteratorAggregate
     {
         return new self(
             new CallbackFilterIterator(
-                iterator($this->innerTraversable),
+                $this->innerIterator,
                 $callback
             )
         );
@@ -96,9 +95,8 @@ class IteratorStream implements IteratorAggregate
      */
     public function map(callable $callback): self
     {
-        /** @psalm-var Iterator<K,R> $mapIterator */
         $mapIterator = new CallbackMapIterator(
-            iterator($this->innerTraversable),
+            $this->innerIterator,
             $callback
         );
 
@@ -113,9 +111,8 @@ class IteratorStream implements IteratorAggregate
      */
     public function mapValue(callable $callback): self
     {
-        /** @psalm-var Iterator<K,R> $mapIterator */
         $mapIterator = new CallbackMapIterator(
-            iterator($this->innerTraversable),
+            $this->innerIterator,
             /**
              * @psalm-param V $value
              */
@@ -137,7 +134,7 @@ class IteratorStream implements IteratorAggregate
      */
     public function reduce($accumulator, callable $callback)
     {
-        foreach ($this->innerTraversable as $key => $value) {
+        foreach ($this->innerIterator as $key => $value) {
             $accumulator = $callback($value, $accumulator, $key);
         }
 
@@ -151,7 +148,7 @@ class IteratorStream implements IteratorAggregate
     {
         return new self(
             new ReverseIterator(
-                iterator($this->innerTraversable)
+                $this->innerIterator
             )
         );
     }
@@ -163,7 +160,7 @@ class IteratorStream implements IteratorAggregate
     {
         return new self(
             new LimitIterator(
-                iterator($this->innerTraversable),
+                $this->innerIterator,
                 0,
                 $count
             )
@@ -177,7 +174,7 @@ class IteratorStream implements IteratorAggregate
     {
         return new self(
             new LimitIterator(
-                iterator($this->innerTraversable),
+                $this->innerIterator,
                 $count
             )
         );
@@ -212,7 +209,7 @@ class IteratorStream implements IteratorAggregate
      */
     public function getIterator(): Iterator
     {
-        return iterator($this->innerTraversable);
+        return $this->innerIterator;
     }
 
     /**
@@ -220,7 +217,7 @@ class IteratorStream implements IteratorAggregate
      */
     public function toArrayPreserveKeys(): array
     {
-        return iterator_to_array($this->innerTraversable, true);
+        return iterator_to_array($this->innerIterator, true);
     }
 
     /**
@@ -228,6 +225,6 @@ class IteratorStream implements IteratorAggregate
      */
     public function toArray(): array
     {
-        return iterator_to_array($this->innerTraversable, false);
+        return iterator_to_array($this->innerIterator, false);
     }
 }
