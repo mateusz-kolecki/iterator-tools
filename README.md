@@ -7,7 +7,6 @@
 **Work in progress!**
 
 This library is in an early stage of development. It is not ready for production usage.
-Before `v1.0.0` I'm not pushing it to https://packagist.org/.
 
 ---
 
