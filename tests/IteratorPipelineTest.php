@@ -276,7 +276,7 @@ class IteratorPipelineTest extends TestCase
     }
 
     /** @test */
-    public function it_should_return_null_when_item_not_found(): void
+    public function it_should_return_empty_optional_when_item_not_found(): void
     {
         $people = [
             new Person('Nick', 10),
