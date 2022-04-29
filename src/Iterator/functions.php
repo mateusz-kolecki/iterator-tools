@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MK\IteratorTools\Iterator;
+namespace IteratorTools\Iterator;
 
 use ArrayIterator;
 use Iterator;
 use IteratorAggregate;
 use IteratorIterator;
-use MK\IteratorTools\IteratorStream;
+use IteratorTools\IteratorPipeline;
 use function is_array;
 
 /**
@@ -40,13 +40,13 @@ function iterator(iterable $iterable): Iterator
  * @psalm-template V
  *
  * @psalm-param iterable<K,V> $iterable
- * @psalm-return IteratorStream<K,V>
+ * @psalm-return IteratorPipeline<K,V>
  */
-function stream(iterable $iterable): IteratorStream
+function pipeline(iterable $iterable): IteratorPipeline
 {
     if ([] === $iterable) {
-        return IteratorStream::empty();
+        return IteratorPipeline::empty();
     }
 
-    return IteratorStream::from($iterable);
+    return IteratorPipeline::from($iterable);
 }

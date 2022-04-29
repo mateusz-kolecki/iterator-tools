@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace MK\IteratorTools\Consumers;
+namespace IteratorTools\Consumers;
 
-use MK\IteratorTools\IteratorStream;
+use IteratorTools\IteratorPipeline;
 
 /**
- * @psalm-return callable(IteratorStream<mixed, int>):int
+ * @psalm-return callable(IteratorPipeline<mixed, int>):int
  */
 function int_sum(): callable
 {
-    return function (IteratorStream $stream): int {
-        return $stream->reduce(
+    return function (IteratorPipeline $pipeline): int {
+        return $pipeline->reduce(
             0,
             fn (int $value, int $sum): int => $sum + $value
         );
@@ -20,12 +20,12 @@ function int_sum(): callable
 }
 
 /**
- * @psalm-return callable(IteratorStream<mixed, float>):float
+ * @psalm-return callable(IteratorPipeline<mixed, float>):float
  */
 function float_sum(): callable
 {
-    return function (IteratorStream $stream): float {
-        return $stream->reduce(
+    return function (IteratorPipeline $pipeline): float {
+        return $pipeline->reduce(
             0.0,
             fn (float $value, float $sum): float => $sum + $value
         );
@@ -33,15 +33,15 @@ function float_sum(): callable
 }
 
 /**
- * @psalm-return callable(IteratorStream<mixed, int|float>):float
+ * @psalm-return callable(IteratorPipeline<mixed, int|float>):float
  */
 function float_average(): callable
 {
-    return function (IteratorStream $stream): float {
+    return function (IteratorPipeline $pipeline): float {
         $sum = 0.0;
         $count = 0;
 
-        foreach ($stream as $number) {
+        foreach ($pipeline as $number) {
             $sum += (float)$number;
             $count += 1;
         }
@@ -56,14 +56,14 @@ function float_average(): callable
  *
  * @psalm-param callable(V, K):(string|false) $callable
  *
- * @psalm-return callable(IteratorStream<K,V>): array<string,list<V>>
+ * @psalm-return callable(IteratorPipeline<K,V>): array<string,list<V>>
  */
 function group_by(callable $callable): callable
 {
-    return function (IteratorStream $stream) use ($callable): array {
+    return function (IteratorPipeline $pipeline) use ($callable): array {
         $map = [];
 
-        foreach ($stream as $key => $value) {
+        foreach ($pipeline as $key => $value) {
             $groupBy = $callable($value, $key);
 
             if (false === $groupBy) {
@@ -82,7 +82,7 @@ function group_by(callable $callable): callable
 }
 
 /**
- * @psalm-return callable(IteratorStream<mixed, array<string, mixed>>): array<string, list<array<string, mixed>>>
+ * @psalm-return callable(IteratorPipeline<mixed, array<string, mixed>>): array<string, list<array<string, mixed>>>
  */
 function group_by_arr_key(string $groupKey): callable
 {
@@ -102,12 +102,12 @@ function group_by_arr_key(string $groupKey): callable
 }
 
 /**
- * @psalm-return callable(IteratorStream<mixed, string|\Stringable>):string
+ * @psalm-return callable(IteratorPipeline<mixed, string|\Stringable>):string
  */
 function str_join(string $delimiter = ''): callable
 {
-    return function (IteratorStream $stream) use ($delimiter): string {
-        $iterator = $stream->getIterator();
+    return function (IteratorPipeline $pipeline) use ($delimiter): string {
+        $iterator = $pipeline->getIterator();
         $iterator->rewind();
 
         if (!$iterator->valid()) {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MK\IteratorTools\Source\Csv;
+namespace IteratorTools\Source\Csv;
 
 use InvalidArgumentException;
 use function strlen;

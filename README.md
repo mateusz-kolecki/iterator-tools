@@ -25,7 +25,7 @@ at once - each key, value pair returned by source iterator is passed by multiple
 
 use ThirdPartyLibrary\CsvReader;
 
-use function MK\IteratorTools\Iterator\stream;
+use function MK\IteratorTools\Iterator\pipeline;
 use function MK\IteratorTools\Consumers\int_sum;
 
 // First you need an iterable source from which you can create a stream
@@ -37,7 +37,7 @@ $source = CsvReader::fromFile('large-file.csv')->assocArrays();
 $yesterday = new DateTime('yesterday');
 
 // Here we create a "stream" using $source Iterator
-$total = stream($source)
+$total = pipeline($source)
 
     // First we tell that we want to filter all rows by date
     // (no iteration is happening at this moment)

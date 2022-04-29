@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace MK\IteratorTools;
+namespace IteratorTools;
 
-use MK\IteratorTools\TestAsset\Person;
+use IteratorTools\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
-use function MK\IteratorTools\Consumers\float_average;
-use function MK\IteratorTools\Consumers\float_sum;
-use function MK\IteratorTools\Consumers\group_by;
-use function MK\IteratorTools\Consumers\group_by_arr_key;
-use function MK\IteratorTools\Consumers\int_sum;
-use function MK\IteratorTools\Consumers\str_join;
-use function MK\IteratorTools\Iterator\stream;
+use function IteratorTools\Consumers\float_average;
+use function IteratorTools\Consumers\float_sum;
+use function IteratorTools\Consumers\group_by;
+use function IteratorTools\Consumers\group_by_arr_key;
+use function IteratorTools\Consumers\int_sum;
+use function IteratorTools\Consumers\str_join;
+use function IteratorTools\Iterator\pipeline;
 
 class ConsumersTest extends TestCase
 {
     /** @test */
     public function it_should_compute_int_sum(): void
     {
-        $stream = stream([1, 2]);
+        $pipeline = pipeline([1, 2]);
 
-        $sum = $stream->consume(int_sum());
+        $sum = $pipeline->consume(int_sum());
 
         $this->assertSame(3, $sum);
     }
@@ -29,9 +29,9 @@ class ConsumersTest extends TestCase
     /** @test */
     public function it_should_compute_float_sum(): void
     {
-        $stream = stream([1.0, 2.0]);
+        $pipeline = pipeline([1.0, 2.0]);
 
-        $sum = $stream->consume(float_sum());
+        $sum = $pipeline->consume(float_sum());
 
         $this->assertSame(3.0, $sum);
     }
@@ -39,9 +39,9 @@ class ConsumersTest extends TestCase
     /** @test */
     public function it_should_compute_float_average(): void
     {
-        $stream = stream([2.0, 4]);
+        $pipeline = pipeline([2.0, 4]);
 
-        $sum = $stream->consume(float_average());
+        $sum = $pipeline->consume(float_average());
 
         $this->assertSame(3.0, $sum);
     }
@@ -58,7 +58,7 @@ class ConsumersTest extends TestCase
             5 => new Person('John', 62),
         ];
 
-        $map = stream($people)->consume(
+        $map = pipeline($people)->consume(
             group_by(fn (Person $p) => $p->name())
         );
 
@@ -94,7 +94,7 @@ class ConsumersTest extends TestCase
             6 => new Person('skip me', 100),
         ];
 
-        $map = stream($people)->consume(
+        $map = pipeline($people)->consume(
             group_by(function (Person $p) {
                 if ('skip me' === $p->name()) {
                     return false;
@@ -125,7 +125,7 @@ class ConsumersTest extends TestCase
     /** @test */
     public function it_should_group_by_array_key_skipping_items_not_containing_given_key(): void
     {
-        $stream = stream([
+        $pipeline = pipeline([
             ['name' => 'Adam', 'age' => 35],
             ['name' => 'Mark', 'age' => 30],
             ['name' => 'Adam', 'age' => 18],
@@ -137,7 +137,7 @@ class ConsumersTest extends TestCase
         ]);
 
 
-        $map = $stream->consume(group_by_arr_key('name'));
+        $map = $pipeline->consume(group_by_arr_key('name'));
 
 
         $expected = [
@@ -161,9 +161,9 @@ class ConsumersTest extends TestCase
     /** @test */
     public function it_should_join_string_elements(): void
     {
-        $stream = stream(['foo', 'bar', 'baz', 'qux']);
+        $pipeline = pipeline(['foo', 'bar', 'baz', 'qux']);
 
-        $result = $stream->consume(str_join());
+        $result = $pipeline->consume(str_join());
 
         $this->assertSame('foobarbazqux', $result);
     }
@@ -178,9 +178,9 @@ class ConsumersTest extends TestCase
             }
         };
 
-        $stream = stream(['foo', 'bar', 'baz', 'qux', $stringable]);
+        $pipeline = pipeline(['foo', 'bar', 'baz', 'qux', $stringable]);
 
-        $result = $stream->consume(str_join('--'));
+        $result = $pipeline->consume(str_join('--'));
 
         $this->assertSame('foo--bar--baz--qux--Stringable', $result);
     }
@@ -189,12 +189,12 @@ class ConsumersTest extends TestCase
      * @test
      * @dataProvider delimiterDataProvider
      */
-    public function it_should_return_empty_string_when_joining_empty_stream(
+    public function it_should_return_empty_string_when_joining_empty_pipeline(
         string $delimiter
     ): void {
-        $stream = stream([]);
+        $pipeline = pipeline([]);
 
-        $result = $stream->consume(str_join($delimiter));
+        $result = $pipeline->consume(str_join($delimiter));
 
         $this->assertSame('', $result);
     }

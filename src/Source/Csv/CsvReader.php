@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MK\IteratorTools\Source\Csv;
+namespace IteratorTools\Source\Csv;
 
 use Exception;
 use Generator;
 use InvalidArgumentException;
+use IteratorTools\IteratorPipeline;
 use LogicException;
-use MK\IteratorTools\IteratorStream;
 use function array_combine;
 use function count;
 use function fclose;
@@ -79,13 +79,13 @@ class CsvReader
      * When CsvReader is created from string (file path or URL) then the file
      * is opened and closed automatically. fclose() is called when CsvReader
      * instance is destructed.
-     * When CsvReader is created from resource (PHP stream) then the handler
+     * When CsvReader is created from resource (PHP pipeline) then the handler
      * is not closed when CsvRead is destructed and handler must be closed
      * manually with fclose().
      *
      * @param string|resource $from when string then it should be file path
      * or URL (anything that can be opened with fopen() function).
-     * When resource then it should be valid PHP stream handler (created by fopen())
+     * When resource then it should be valid PHP pipeline handler (created by fopen())
      *
      * @param CsvReaderOptions $options instance of CsvReaderOptions or null to use defaults
      * @throws InvalidArgumentException when first argument is not a string or handler
@@ -126,7 +126,7 @@ class CsvReader
         $enclosure = $this->options->enclosure();
         $escape = $this->options->escape();
 
-        for (;;) {
+        for (; ;) {
             $line = fgetcsv($fileHandle, $maxLineLength, $separator, $enclosure, $escape);
 
             // A blank line in a CSV file will be returned as an array comprising
@@ -151,27 +151,27 @@ class CsvReader
     }
 
     /**
-     * Apply transformations to the IteratorStream
+     * Apply transformations to the IteratorPipeline
      *
-     * @param IteratorStream $stream stream representing CSV source (file of handler)
-     * @psalm-param IteratorStream<array-key, array<string|int, string>> $stream
+     * @param IteratorPipeline $pipeline pipeline representing CSV source (file of handler)
+     * @psalm-param IteratorPipeline<array-key, array<string|int, string>> $pipeline
      *
-     * @return IteratorStream stream with transformations applied
-     * @psalm-return IteratorStream<array-key, array<string|int, string|int|float|null|\DateTimeInterface>>
+     * @return IteratorPipeline pipeline with transformations applied
+     * @psalm-return IteratorPipeline<array-key, array<string|int, string|int|float|null|\DateTimeInterface>>
      */
-    protected function applyTransformations(IteratorStream $stream): IteratorStream
+    protected function applyTransformations(IteratorPipeline $pipeline): IteratorPipeline
     {
         $dateColumns = $this->options->dateColumns();
 
         if (count($dateColumns)) {
-            $stream = $stream->map(new Transformation\DateColumns($dateColumns));
+            $pipeline = $pipeline->map(new Transformation\DateColumns($dateColumns));
         }
 
         if ($this->options->convertNumerics()) {
-            $stream = $stream->map(new Transformation\Numerics());
+            $pipeline = $pipeline->map(new Transformation\Numerics());
         }
 
-        return $stream;
+        return $pipeline;
     }
 
     /**
@@ -180,13 +180,13 @@ class CsvReader
      * Read all lines and yield each row as a list (indexed array).
      * First field from the CSV line is under index 0, second filed is under 2, and so on.
      *
-     * @return IteratorStream stream of indexed arrays
-     * @psalm-return IteratorStream<array-key, array<array-key, string|int|float|null|\DateTimeInterface>>
+     * @return IteratorPipeline pipeline of indexed arrays
+     * @psalm-return IteratorPipeline<array-key, array<array-key, string|int|float|null|\DateTimeInterface>>
      */
-    public function read(): IteratorStream
+    public function read(): IteratorPipeline
     {
         return $this->applyTransformations(
-            IteratorStream::from($this->readAllGenerator())
+            IteratorPipeline::from($this->readAllGenerator())
         );
     }
 
@@ -225,13 +225,13 @@ class CsvReader
      * the CSV source is used to prepare keys. The first row is not included in
      * the result and is used only as a header.
      *
-     * @return IteratorStream stream of assoc arrays
-     * @psalm-return IteratorStream<array-key, array<array-key, string|int|float|null|\DateTimeInterface>>
+     * @return IteratorPipeline pipeline of assoc arrays
+     * @psalm-return IteratorPipeline<array-key, array<array-key, string|int|float|null|\DateTimeInterface>>
      */
-    public function readAssoc(): IteratorStream
+    public function readAssoc(): IteratorPipeline
     {
         return $this->applyTransformations(
-            IteratorStream::from($this->readAllAssoc())
+            IteratorPipeline::from($this->readAllAssoc())
         );
     }
 }

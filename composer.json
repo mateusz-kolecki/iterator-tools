@@ -1,5 +1,5 @@
 {
-  "name": "mkolecki/iterator-tools",
+  "name": "iterator-tools/pipeline",
   "description": "Tools to work with iterators including lazy evaluation",
   "license": "MIT",
   "type": "library",
@@ -26,12 +26,12 @@
       "src/Consumers/functions.php"
     ],
     "psr-4": {
-      "MK\\IteratorTools\\": "src/"
+      "IteratorTools\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "MK\\IteratorTools\\": "tests/"
+      "IteratorTools\\": "tests/"
     }
   },
   "scripts": {

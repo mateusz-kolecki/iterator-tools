@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace MK\IteratorTools;
+namespace IteratorTools;
 
 use AppendIterator;
 use CallbackFilterIterator;
 use EmptyIterator;
 use Iterator;
 use IteratorAggregate;
+use IteratorTools\Iterator\CallbackMapIterator;
+use IteratorTools\Iterator\ReverseIterator;
 use LimitIterator;
-use MK\IteratorTools\Iterator\CallbackMapIterator;
-use MK\IteratorTools\Iterator\ReverseIterator;
 use function iterator_to_array;
-use function MK\IteratorTools\Iterator\iterator;
+use function IteratorTools\Iterator\iterator;
 
 /**
  * @psalm-template K
@@ -21,7 +21,7 @@ use function MK\IteratorTools\Iterator\iterator;
  *
  * @template-implements IteratorAggregate<K,V>
  */
-class IteratorStream implements IteratorAggregate
+class IteratorPipeline implements IteratorAggregate
 {
     /**
      * @psalm-var Iterator<K,V>

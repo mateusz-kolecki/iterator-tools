@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MK\IteratorTools\Source\Csv\Transformation;
+namespace IteratorTools\Source\Csv\Transformation;
 
 use DateTimeImmutable;
 use InvalidArgumentException;

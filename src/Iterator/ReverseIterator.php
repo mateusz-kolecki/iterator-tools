@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MK\IteratorTools\Iterator;
+namespace IteratorTools\Iterator;
 
 use EmptyIterator;
 use Iterator;

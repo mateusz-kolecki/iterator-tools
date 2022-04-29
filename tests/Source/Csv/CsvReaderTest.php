@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MK\IteratorTools\Source\Csv;
+namespace IteratorTools\Source\Csv;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
@@ -49,7 +49,7 @@ class CsvReaderTest extends TestCase
     {
         return [
             'data:// URL'   => [fn (string $content) => $this->prepareDataUrlWith($content)],
-            'stream handle' => [fn (string $content) => $this->prepareHandleWith($content)],
+            'pipeline handle' => [fn (string $content) => $this->prepareHandleWith($content)],
         ];
     }
 

@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace MK\IteratorTools;
+namespace IteratorTools;
 
 use ArrayIterator;
 use Exception;
-use MK\IteratorTools\TestAsset\Person;
+use Generator;
+use IteratorTools\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
 
-use function MK\IteratorTools\Consumers\float_sum;
-use function MK\IteratorTools\Iterator\pipeline;
+use function IteratorTools\Consumers\float_sum;
+use function IteratorTools\Iterator\pipeline;
 
 class IteratorPipelineTest extends TestCase
 {
@@ -258,16 +259,16 @@ class IteratorPipelineTest extends TestCase
     /** @test */
     public function it_should_stop_consuming_source_when_item_found(): void
     {
-        $people = (function () {
+        $people = function (): Generator {
             yield 0 => new Person('Nick', 10);
             yield 1 => new Person('Carl', 18);
             yield 2 => new Person('Jane', 25);
 
             throw new Exception('This should not happen!');
-        })();
+        };
 
 
-        $result = pipeline($people)->findAny(
+        $result = pipeline($people())->findAny(
             fn (Person $p) => 25 <= $p->age()
         );
 
