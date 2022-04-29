@@ -10,21 +10,21 @@ use MK\IteratorTools\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
 
 use function MK\IteratorTools\Consumers\float_sum;
-use function MK\IteratorTools\Iterator\stream;
+use function MK\IteratorTools\Iterator\pipeline;
 
-class IteratorStreamTest extends TestCase
+class IteratorPipelineTest extends TestCase
 {
     /** @test */
     public function it_should_append_after_map(): void
     {
-        $stream = IteratorStream::empty()
+        $pipeline = IteratorPipeline::empty()
             ->append([1, 2, 3])
             ->map(function (int $n): string {
                 return strval($n * 3);
             })
             ->append(new ArrayIterator(['A', 'B']));
 
-        $result = $stream->toArray();
+        $result = $pipeline->toArray();
 
         $expected = [
             '3', '6', '9',
@@ -37,7 +37,7 @@ class IteratorStreamTest extends TestCase
     /** @test */
     public function it_should_append_after_filter(): void
     {
-        $stream = IteratorStream::from(['a'])
+        $pipeline = IteratorPipeline::from(['a'])
             ->append(['del_1', 'keep_2', 'del_3', 'keep_4'])
 
             ->filter(function (string $s): bool {
@@ -54,7 +54,7 @@ class IteratorStreamTest extends TestCase
                 return str_replace('_', ' ', $s);
             });
 
-        $result = $stream->toArray();
+        $result = $pipeline->toArray();
 
         $expected = [
             'KEEP 2', 'KEEP 4',
@@ -68,7 +68,7 @@ class IteratorStreamTest extends TestCase
     /** @test */
     public function it_should_preserve_original_keys(): void
     {
-        $stream = IteratorStream::empty()
+        $pipeline = IteratorPipeline::empty()
             ->append([
                 'one' => 1,
                 'foo' => 2,
@@ -88,7 +88,7 @@ class IteratorStreamTest extends TestCase
             });
 
 
-        $result = $stream->toArrayPreserveKeys();
+        $result = $pipeline->toArrayPreserveKeys();
 
         $expected = [
             'foo' => 4,
@@ -102,9 +102,9 @@ class IteratorStreamTest extends TestCase
     /** @test */
     public function it_should_return_same_starting_state_when_redicing_empty_iterator(): void
     {
-        $stream = IteratorStream::empty();
+        $pipeline = IteratorPipeline::empty();
 
-        $result = $stream->reduce(0, function (): int {
+        $result = $pipeline->reduce(0, function (): int {
             return 1;
         });
 
@@ -115,9 +115,9 @@ class IteratorStreamTest extends TestCase
     /** @test */
     public function it_should_call_callback_for_each_item_and_return_last_result(): void
     {
-        $stream = IteratorStream::from(['Hello', 'World']);
+        $pipeline = IteratorPipeline::from(['Hello', 'World']);
 
-        $result = $stream->reduce("--", function (string $value, string $acc, int $key): string {
+        $result = $pipeline->reduce("--", function (string $value, string $acc, int $key): string {
             return "{$acc}{$key}:{$value}--";
         });
 
@@ -127,13 +127,13 @@ class IteratorStreamTest extends TestCase
     /** @test */
     public function it_should_return_items_in_reverse_order(): void
     {
-        $stream = IteratorStream::from([
+        $pipeline = IteratorPipeline::from([
             1 => 'one',
             2 => 'two',
             3 => 'three',
         ]);
 
-        $reversed = $stream->reverse()
+        $reversed = $pipeline->reverse()
             ->toArrayPreserveKeys();
 
         $expected = [
@@ -149,7 +149,7 @@ class IteratorStreamTest extends TestCase
     /** @test */
     public function it_should_reverse_after_mapping_filtering_and_append(): void
     {
-        $stream = IteratorStream::empty()
+        $pipeline = IteratorPipeline::empty()
             ->append([
                 1 => 'one',
                 2 => 'two',
@@ -166,7 +166,7 @@ class IteratorStreamTest extends TestCase
 
             ->reverse();
 
-        $reversed = $stream->toArrayPreserveKeys();
+        $reversed = $pipeline->toArrayPreserveKeys();
 
         $expected = [
             3 => 'THREE',
@@ -179,7 +179,7 @@ class IteratorStreamTest extends TestCase
     /** @test */
     public function it_should_limit_the_result(): void
     {
-        $stream = IteratorStream::empty()
+        $pipeline = IteratorPipeline::empty()
             ->append([
                 'one' => 1,
                 'two' => 2,
@@ -190,7 +190,7 @@ class IteratorStreamTest extends TestCase
 
             ->limit(3);
 
-        $result = $stream->toArrayPreserveKeys();
+        $result = $pipeline->toArrayPreserveKeys();
 
         $expected = [
             'one' => 1,
@@ -204,7 +204,7 @@ class IteratorStreamTest extends TestCase
     /** @test */
     public function it_should_skip_the_result(): void
     {
-        $stream = IteratorStream::empty()
+        $pipeline = IteratorPipeline::empty()
             ->append([
                 'one' => 1,
                 'two' => 2,
@@ -215,7 +215,7 @@ class IteratorStreamTest extends TestCase
 
             ->skip(3);
 
-        $result = $stream->toArrayPreserveKeys();
+        $result = $pipeline->toArrayPreserveKeys();
 
         $expected = [
             'four' => 4,
@@ -228,7 +228,7 @@ class IteratorStreamTest extends TestCase
     /** @test */
     public function it_should_allow_consumer_callbacks(): void
     {
-        $sum = IteratorStream::from(['1', '2'])
+        $sum = IteratorPipeline::from(['1', '2'])
             ->mapValue('floatval')
             ->filter(function () {
                 return true;
@@ -248,7 +248,7 @@ class IteratorStreamTest extends TestCase
             3 => new Person('Mark', 42),
         ];
 
-        $result = stream($people)->findAny(
+        $result = pipeline($people)->findAny(
             fn (Person $p) => 25 <= $p->age()
         );
 
@@ -267,7 +267,7 @@ class IteratorStreamTest extends TestCase
         })();
 
 
-        $result = stream($people)->findAny(
+        $result = pipeline($people)->findAny(
             fn (Person $p) => 25 <= $p->age()
         );
 
@@ -283,7 +283,7 @@ class IteratorStreamTest extends TestCase
             new Person('Jane', 25),
         ];
 
-        $result = stream($people)->findAny(fn () => false);
+        $result = pipeline($people)->findAny(fn () => false);
 
         $this->assertFalse($result->isPresent());
     }
