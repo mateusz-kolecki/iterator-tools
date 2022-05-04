@@ -5,7 +5,7 @@
             "src"
         ]
     },
-    "initialTestsPhpOptions": "-d zend_extension=xdebug.so -d xdebug.mode=coverage",
+    "initialTestsPhpOptions": "-d xdebug.mode=coverage",
     "minMsi": 90,
     "minCoveredMsi": 95,
     "logs": {
