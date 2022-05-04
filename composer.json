@@ -15,14 +15,14 @@
     "symfony/polyfill-php81": "^1.23"
   },
   "require-dev": {
+    "ext-pcntl": "*",
+    "ext-posix": "*",
+    "ext-sockets": "*",
     "friendsofphp/php-cs-fixer": "^3.2",
-    "infection/infection": "^0.26.8",
+    "infection/infection": "0.26.6",
     "phpunit/phpunit": "^9.5.20",
     "psalm/plugin-phpunit": "^0.16.1",
-    "vimeo/psalm": "^4.23",
-    "ext-sockets": "*",
-    "ext-pcntl": "*",
-    "ext-posix": "*"
+    "vimeo/psalm": "^4.23"
   },
   "autoload": {
     "files": [
