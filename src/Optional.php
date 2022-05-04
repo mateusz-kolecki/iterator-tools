@@ -49,7 +49,7 @@ class Optional
      */
     public function orElse($alternative)
     {
-        if (!$this->isPresent()) {
+        if (null === $this->value) {
             return $alternative;
         }
 
@@ -62,7 +62,7 @@ class Optional
      */
     public function get()
     {
-        if (!$this->isPresent()) {
+        if (null === $this->value) {
             throw new NotFoundException();
         }
 

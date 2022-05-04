@@ -32,14 +32,13 @@ class OptionalTest extends TestCase
     }
 
     /** @test */
-    public function it_should_return_value_when_not_empty(): void
+    public function it_should_return_stored_value_when_not_empty(): void
     {
+        /** @psalm-var Optional<string> */
         $optional = Optional::from('Foo');
 
-        /**
-         * @psalm-suppress RedundantConditionGivenDocblockType
-         */
         $this->assertSame('Foo', $optional->get());
+        $this->assertEquals('Foo', $optional->orElse('Bar'));
     }
 
     /**

@@ -167,7 +167,7 @@ class CsvReaderOptions
      */
     public function withSeparator(string $separator): self
     {
-        if (1 < strlen($separator) || empty($separator)) {
+        if (1 !== strlen($separator)) {
             throw new InvalidArgumentException("Separator must be one character length");
         }
 
@@ -181,7 +181,7 @@ class CsvReaderOptions
      */
     public function withEnclosure(string $enclosure): self
     {
-        if (1 < strlen($enclosure) || empty($enclosure)) {
+        if (1 !== strlen($enclosure)) {
             throw new InvalidArgumentException("Enclosure must be one character length");
         }
 

@@ -31,7 +31,7 @@ class IteratorPipeline implements IteratorAggregate
     /**
      * @psalm-param Iterator<K,V> $iterator
      */
-    protected function __construct(Iterator $iterator)
+    private function __construct(Iterator $iterator)
     {
         $this->innerIterator = $iterator;
     }
@@ -159,11 +159,7 @@ class IteratorPipeline implements IteratorAggregate
     public function limit(int $count): self
     {
         return new self(
-            new LimitIterator(
-                $this->innerIterator,
-                0,
-                $count
-            )
+            new LimitIterator($this->innerIterator, 0, $count)
         );
     }
 
@@ -173,10 +169,7 @@ class IteratorPipeline implements IteratorAggregate
     public function skip(int $count): self
     {
         return new self(
-            new LimitIterator(
-                $this->innerIterator,
-                $count
-            )
+            new LimitIterator($this->innerIterator, $count)
         );
     }
 
@@ -186,7 +179,7 @@ class IteratorPipeline implements IteratorAggregate
      */
     public function findAny(callable $predicate): Optional
     {
-        foreach ($this->filter($predicate)->limit(1) as $v) {
+        foreach ($this->filter($predicate) as $v) {
             return Optional::from($v);
         }
 

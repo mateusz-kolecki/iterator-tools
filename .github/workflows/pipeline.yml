@@ -39,6 +39,9 @@ jobs:
 
     - name: Static analysis - Psalm
       run: vendor/bin/psalm --no-cache
+
+    - name: Mutation testing - Infection
+      run: vendor/bin/infection -j4 --ansi --show-mutations --no-interaction
     
     - name: Check coding standards
       run: vendor/bin/php-cs-fixer fix --diff --allow-risky=yes --dry-run

@@ -45,8 +45,7 @@ class ReverseIterator implements Iterator
 
     public function valid(): bool
     {
-        return $this->keys->valid()
-            && $this->values->valid();
+        return $this->values->valid();
     }
 
     public function key()
@@ -62,7 +61,6 @@ class ReverseIterator implements Iterator
     public function rewind(): void
     {
         if (false === $this->initialized) {
-            $this->original->rewind();
             $this->revert();
             $this->initialized = true;
         }

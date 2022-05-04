@@ -1,0 +1,17 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "initialTestsPhpOptions": "-d zend_extension=xdebug.so -d xdebug.mode=coverage",
+    "minMsi": 90,
+    "minCoveredMsi": 95,
+    "logs": {
+        "text": "infection.log"
+    },
+    "mutators": {
+        "@default": true
+    }
+}

@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace IteratorTools\Source\Csv;
 
-use Exception;
 use Generator;
 use InvalidArgumentException;
 use IteratorTools\IteratorPipeline;
-use LogicException;
+use RuntimeException;
 use function array_combine;
 use function count;
 use function fclose;
@@ -17,7 +16,9 @@ use function fgetcsv;
 use function fopen;
 use function get_resource_type;
 use function gettype;
+use function restore_error_handler;
 use function rewind;
+use function set_error_handler;
 use function stream_get_meta_data;
 
 class CsvReader
@@ -32,10 +33,6 @@ class CsvReader
      */
     private function __construct($fileHandle, CsvReaderOptions $options = null)
     {
-        if ('stream' !== get_resource_type($fileHandle)) {
-            throw new InvalidArgumentException("Expected stream resource");
-        }
-
         $this->fileHandle = $fileHandle;
         $this->closeOnDestruct = true;
         $this->options = $options ?: CsvReaderOptions::defaults();
@@ -44,7 +41,8 @@ class CsvReader
     public function __destruct()
     {
         if ($this->closeOnDestruct) {
-            fclose($this->fileHandle);
+            @fclose($this->fileHandle);
+            $this->closeOnDestruct = false;
         }
     }
 
@@ -60,14 +58,19 @@ class CsvReader
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     private static function fromString(string $name, CsvReaderOptions $options = null): self
     {
-        $handle = fopen($name, 'r');
+        set_error_handler(function (int $errno, string $error) {
+            throw new RuntimeException($error, $errno);
+        });
 
-        if (false === $handle) {
-            throw new InvalidArgumentException("Can't open {$name}");
+        try {
+            $handle = @fopen($name, 'r');
+        } finally {
+            /** @infection-ignore-all */
+            restore_error_handler();
         }
 
         return new self($handle, $options);
@@ -87,8 +90,9 @@ class CsvReader
      * or URL (anything that can be opened with fopen() function).
      * When resource then it should be valid PHP pipeline handler (created by fopen())
      *
-     * @param CsvReaderOptions $options instance of CsvReaderOptions or null to use defaults
+     * @param CsvReaderOptions|null $options instance of CsvReaderOptions or null to use defaults
      * @throws InvalidArgumentException when first argument is not a string or handler
+     * @throws RuntimeException when first argument is string and there was error while trying fopen()
      */
     public static function from($from, CsvReaderOptions $options = null): self
     {
@@ -99,10 +103,12 @@ class CsvReader
                 return self::fromString($from, $options);
 
             case 'resource':
-                return self::fromHandle($from, $options);
+                if ('stream' === get_resource_type($from)) {
+                    return self::fromHandle($from, $options);
+                }
         }
 
-        throw new InvalidArgumentException("Argument \$from should be string or resource but {$type} provided");
+        throw new InvalidArgumentException("Argument \$from should be string or stream resource but {$type} provided");
     }
 
     /**
@@ -113,12 +119,10 @@ class CsvReader
         $fileHandle = $this->fileHandle;
         $seekable = stream_get_meta_data($fileHandle)['seekable'];
 
-        if ($seekable) {
-            if (!rewind($fileHandle)) {
-                throw new Exception("Could not rewind seekable handler");
-            }
-        } elseif (feof($fileHandle)) {
-            throw new Exception("Reached end of file and handler is not seekable");
+        if ($seekable && !rewind($fileHandle)) {
+            throw new RuntimeException("Could not rewind seekable handler");
+        } elseif (!$seekable && feof($fileHandle)) {
+            throw new RuntimeException("Reached end-of-file and handler is not seekable");
         }
 
         $maxLineLength = $this->options->maxLineLength();
@@ -139,7 +143,7 @@ class CsvReader
             // or false on other errors, including end of file.
 
             if (null === $line) {
-                throw new Exception("Invalid handle");
+                throw new RuntimeException("Invalid handle");
             }
 
             if (false === $line) {
@@ -159,7 +163,7 @@ class CsvReader
      * @return IteratorPipeline pipeline with transformations applied
      * @psalm-return IteratorPipeline<array-key, array<string|int, string|int|float|null|\DateTimeInterface>>
      */
-    protected function applyTransformations(IteratorPipeline $pipeline): IteratorPipeline
+    private function applyTransformations(IteratorPipeline $pipeline): IteratorPipeline
     {
         $dateColumns = $this->options->dateColumns();
 
@@ -193,10 +197,9 @@ class CsvReader
     /**
      * @psalm-return Generator<array-key, array<array-key, string>>
      */
-    private function readAllAssoc(): Generator
+    private function readAllAssocGenerator(): Generator
     {
         $rows = $this->readAllGenerator();
-        $rows->rewind();
 
         if (!$rows->valid()) {
             return;
@@ -209,7 +212,7 @@ class CsvReader
             $values = $rows->current();
 
             if (count($values) !== count($header)) {
-                throw new LogicException("Number of fields is not the same as in header!");
+                throw new RuntimeException("Number of fields is not the same as in header!");
             }
 
             yield array_combine($header, $values);
@@ -231,7 +234,7 @@ class CsvReader
     public function readAssoc(): IteratorPipeline
     {
         return $this->applyTransformations(
-            IteratorPipeline::from($this->readAllAssoc())
+            IteratorPipeline::from($this->readAllAssocGenerator())
         );
     }
 }

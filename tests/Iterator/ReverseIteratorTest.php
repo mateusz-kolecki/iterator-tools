@@ -77,4 +77,21 @@ class ReverseIteratorTest extends TestCase
         $this->assertSame($expected, $r1);
         $this->assertSame($expected, $r2);
     }
+
+    /** @test */
+    public function it_rewinds_source_when_it_starts(): void
+    {
+        $input = new ArrayIterator([1, 2, 3, 4, 5]);
+        $input->rewind();
+        $input->next();
+        $input->next();
+        $input->next();
+        $input->next();
+
+        $reverseIterator = new ReverseIterator($input);
+
+        $result = iterator_to_array($reverseIterator, false);
+
+        $this->assertSame([5, 4, 3, 2, 1], $result);
+    }
 }

@@ -15,10 +15,14 @@
     "symfony/polyfill-php81": "^1.23"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.5",
-    "vimeo/psalm": "^4.10",
+    "friendsofphp/php-cs-fixer": "^3.2",
+    "infection/infection": "^0.26.8",
+    "phpunit/phpunit": "^9.5.20",
     "psalm/plugin-phpunit": "^0.16.1",
-    "friendsofphp/php-cs-fixer": "^3.2"
+    "vimeo/psalm": "^4.23",
+    "ext-sockets": "*",
+    "ext-pcntl": "*",
+    "ext-posix": "*"
   },
   "autoload": {
     "files": [
@@ -33,6 +37,9 @@
     "psr-4": {
       "IteratorTools\\": "tests/"
     }
+  },
+  "config": {
+    "sort-packages": true
   },
   "scripts": {
     "post-update-cmd": "./install-git-hooks"
