@@ -187,6 +187,24 @@ class IteratorPipeline implements IteratorAggregate
     }
 
     /**
+     * @psalm-template RK
+     * @psalm-template RV
+     *
+     * @psalm-param callable(V, K):iterable<RK, RV> $extractor
+     * @psalm-return self<RK,RV>
+     */
+    public function extract(callable $extractor): self
+    {
+        $generator = (function () use ($extractor) {
+            foreach ($this->innerIterator as $key => $value) {
+                yield from $extractor($value, $key);
+            }
+        })();
+
+        return new self($generator);
+    }
+
+    /**
      * @template R
      *
      * @psalm-param callable(self<K,V>):R $consumer

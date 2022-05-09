@@ -12,6 +12,8 @@ use PHPUnit\Framework\TestCase;
 
 use function IteratorTools\Consumers\float_sum;
 use function IteratorTools\Iterator\pipeline;
+use function strtolower;
+use function strtoupper;
 
 class IteratorPipelineTest extends TestCase
 {
@@ -40,17 +42,13 @@ class IteratorPipelineTest extends TestCase
     {
         $pipeline = IteratorPipeline::from(['a'])
             ->append(['del_1', 'keep_2', 'del_3', 'keep_4'])
-
             ->filter(function (string $s): bool {
                 return 'keep' === substr($s, 0, 4);
             })
-
             ->map(function (string $s): string {
                 return strtoupper($s);
             })
-
             ->append(['foo_5', 'foo_6'])
-
             ->map(function (string $s): string {
                 return str_replace('_', ' ', $s);
             });
@@ -74,16 +72,13 @@ class IteratorPipelineTest extends TestCase
                 'one' => 1,
                 'foo' => 2,
             ])
-
             ->append((function () {
                 yield 'three' => 3;
                 yield 'bar' => 4;
             })())
-
             ->map(function (int $value): int {
                 return 2 * $value;
             })
-
             ->filter(function ($_, string $key) {
                 return in_array($key, ['foo', 'bar'], true);
             });
@@ -97,6 +92,33 @@ class IteratorPipelineTest extends TestCase
         ];
 
         $this->assertEquals($expected, $result);
+    }
+
+    /** @test */
+    public function it_should_extract_iterator(): void
+    {
+        $names = [
+            'first' => 'Mark',
+            'second' => 'John'
+        ];
+
+        $extractingPipeline = pipeline($names)
+            ->extract(function (string $name, string $key): Generator {
+                yield "{$name}_{$key}_normal" => $name;
+                yield "{$name}_{$key}_lower" => strtolower($name);
+                yield "{$name}_{$key}_upper" => strtoupper($name);
+            });
+
+        $expected = [
+            'Mark_first_normal' => 'Mark',
+            'Mark_first_lower' => 'mark',
+            'Mark_first_upper' => 'MARK',
+            'John_second_normal' => 'John',
+            'John_second_lower' => 'john',
+            'John_second_upper' => 'JOHN',
+        ];
+
+        $this->assertSame($expected, $extractingPipeline->toArrayPreserveKeys());
     }
 
 
@@ -156,15 +178,12 @@ class IteratorPipelineTest extends TestCase
                 2 => 'two',
                 3 => 'three',
             ])
-
             ->map(function (string $str) {
                 return strtoupper($str);
             })
-
             ->filter(function (string $str): bool {
                 return 'T' === $str[0];
             })
-
             ->reverse();
 
         $reversed = $pipeline->toArrayPreserveKeys();
@@ -188,7 +207,6 @@ class IteratorPipelineTest extends TestCase
                 'four' => 4,
                 'fife' => 5,
             ])
-
             ->limit(3);
 
         $result = $pipeline->toArrayPreserveKeys();
@@ -213,7 +231,6 @@ class IteratorPipelineTest extends TestCase
                 'four' => 4,
                 'fife' => 5,
             ])
-
             ->skip(3);
 
         $result = $pipeline->toArrayPreserveKeys();
