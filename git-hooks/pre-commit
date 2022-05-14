@@ -6,10 +6,10 @@ GREEN='\033[0;32m'
 NO_COLOR='\033[0m'
 
 declare -A checks=(
-    [php-cs-fixer]="vendor/bin/php-cs-fixer fix --diff --allow-risky=yes --dry-run"
-    [infection]="vendor/bin/infection -j4 --ansi --show-mutations --no-interaction"
-    [Psalm]="vendor/bin/psalm --no-cache"
-    [PHPUnit]="vendor/bin/phpunit --color --testdox"
+    [unit-tests]="composer run unit-tests"
+    [coding-standards]="composer run coding-standards"
+    [static-analysis]="composer run static-analysis"
+    [mutation-tests]="composer run mutation-tests"
 )
 
 

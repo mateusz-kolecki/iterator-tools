@@ -42,6 +42,11 @@
     "sort-packages": true
   },
   "scripts": {
-    "post-update-cmd": "./install-git-hooks"
+    "post-update-cmd": "./install-git-hooks",
+    "unit-tests": "phpunit --color --testdox",
+    "coding-standards": "php-cs-fixer fix --diff --allow-risky=yes --dry-run",
+    "coding-standards-fix": "php-cs-fixer fix --diff --allow-risky=yes",
+    "static-analysis": "psalm --no-cache",
+    "mutation-tests": "infection -j4 --ansi --show-mutations --no-interaction"
   }
 }

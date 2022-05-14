@@ -35,14 +35,14 @@ jobs:
       run: ${{ matrix.composer_update }}
 
     - name: Run Unit tests
-      run: vendor/bin/phpunit --color --testdox
+      run: composer run unit-tests
 
     - name: Static analysis - Psalm
-      run: vendor/bin/psalm --no-cache
+      run: composer run static-analysis
 
     - name: Mutation testing - Infection
-      run: vendor/bin/infection -j4 --ansi --show-mutations --no-interaction
+      run: composer run mutation-tests
     
     - name: Check coding standards
-      run: vendor/bin/php-cs-fixer fix --diff --allow-risky=yes --dry-run
+      run: composer run coding-standards
       if: matrix.php != '8.1'
