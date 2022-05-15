@@ -49,13 +49,11 @@ class Optional
      */
     public function orElse($alternative): self
     {
-        $self = clone $this;
+        $value = null !== $this->value
+            ? $this->value
+            : $alternative;
 
-        if (null === $self->value) {
-            $self->value = $alternative;
-        }
-
-        return $self;
+        return self::from($value);
     }
 
     /**
