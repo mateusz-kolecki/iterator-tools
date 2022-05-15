@@ -66,4 +66,14 @@ class OptionalTest extends TestCase
 
         $this->assertTrue($optional->isPresent());
     }
+
+    /** @test */
+    public function it_return_new_object_when_calling_or_else(): void
+    {
+        /** @psalm-var Optional<int> $optional */
+        $optional = Optional::from(1);
+        $alternate = $optional->orElse(2);
+
+        $this->assertNotSame($optional, $alternate);
+    }
 }
