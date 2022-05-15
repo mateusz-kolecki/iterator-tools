@@ -6,6 +6,7 @@ namespace IteratorTools;
 
 /**
  * @psalm-template T
+ * @psalm-immutable
  */
 class Optional
 {
@@ -37,6 +38,7 @@ class Optional
      *
      * @psalm-param ?V $value
      * @psalm-return self<V>
+     * @psalm-pure
      */
     public static function from($value): self
     {

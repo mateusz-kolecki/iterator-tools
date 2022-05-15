@@ -5,6 +5,7 @@ namespace IteratorTools;
 /**
  * @psalm-template K
  * @psalm-template V
+ * @psalm-immutable
  */
 class KeyValuePair
 {
@@ -31,6 +32,7 @@ class KeyValuePair
      * @psalm-param TK $key
      * @psalm-param TV $value
      * @psalm-return self<TK, TV>
+     * @psalm-pure
      */
     public static function from($key, $value): self
     {
