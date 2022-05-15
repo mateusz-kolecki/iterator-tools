@@ -10,6 +10,7 @@ use EmptyIterator;
 use Iterator;
 use IteratorAggregate;
 use IteratorTools\Iterator\CallbackMapIterator;
+use IteratorTools\Iterator\ExtractingGenerator;
 use IteratorTools\Iterator\ReverseIterator;
 use LimitIterator;
 use function iterator_to_array;
@@ -175,33 +176,51 @@ class IteratorPipeline implements IteratorAggregate
 
     /**
      * @psalm-param callable(V,K,Iterator<K,V>):bool $predicate
-     * @psalm-return Optional<V>
+     * @psalm-return Optional<KeyValuePair<K,V>>
      */
-    public function findAny(callable $predicate): Optional
+    public function findAnyKeyValue(callable $predicate): Optional
     {
-        foreach ($this->filter($predicate) as $v) {
-            return Optional::from($v);
+        foreach ($this->filter($predicate) as $k => $v) {
+            return Optional::from(
+                KeyValuePair::from($k, $v)
+            );
         }
 
         return Optional::empty();
     }
 
     /**
+     * @psalm-param callable(V,K,Iterator<K,V>):bool $predicate
+     * @psalm-return Optional<V>
+     */
+    public function findAnyValue(callable $predicate): Optional
+    {
+        $result = $this->findAnyKeyValue($predicate);
+
+        try {
+            return Optional::from(
+                $result->get()->value()
+            );
+        } catch (NotFoundException $e) {
+            return Optional::empty();
+        }
+    }
+
+    /**
      * @psalm-template RK
      * @psalm-template RV
      *
-     * @psalm-param callable(V, K):iterable<RK, RV> $extractor
+     * @psalm-param callable(V, K):iterable<RK, RV> $extractorCallback
      * @psalm-return self<RK,RV>
      */
-    public function extract(callable $extractor): self
+    public function extract(callable $extractorCallback): self
     {
-        $generator = (function () use ($extractor) {
-            foreach ($this->innerIterator as $key => $value) {
-                yield from $extractor($value, $key);
-            }
-        })();
+        $generator = new ExtractingGenerator(
+            $this->innerIterator,
+            $extractorCallback
+        );
 
-        return new self($generator);
+        return new self($generator->getIterator());
     }
 
     /**

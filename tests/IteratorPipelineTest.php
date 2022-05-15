@@ -10,6 +10,7 @@ use Generator;
 use IteratorTools\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
 
+use UnexpectedValueException;
 use function IteratorTools\Consumers\float_sum;
 use function IteratorTools\Iterator\pipeline;
 use function strtolower;
@@ -20,7 +21,7 @@ class IteratorPipelineTest extends TestCase
     /** @test */
     public function it_should_append_after_map(): void
     {
-        $pipeline = IteratorPipeline::empty()
+        $pipeline = pipeline()
             ->append([1, 2, 3])
             ->map(function (int $n): string {
                 return strval($n * 3);
@@ -40,7 +41,7 @@ class IteratorPipelineTest extends TestCase
     /** @test */
     public function it_should_append_after_filter(): void
     {
-        $pipeline = IteratorPipeline::from(['a'])
+        $pipeline = pipeline(['a'])
             ->append(['del_1', 'keep_2', 'del_3', 'keep_4'])
             ->filter(function (string $s): bool {
                 return 'keep' === substr($s, 0, 4);
@@ -67,7 +68,7 @@ class IteratorPipelineTest extends TestCase
     /** @test */
     public function it_should_preserve_original_keys(): void
     {
-        $pipeline = IteratorPipeline::empty()
+        $pipeline = pipeline()
             ->append([
                 'one' => 1,
                 'foo' => 2,
@@ -121,11 +122,21 @@ class IteratorPipelineTest extends TestCase
         $this->assertSame($expected, $extractingPipeline->toArrayPreserveKeys());
     }
 
+    /** @test */
+    public function it_throws_exception_when_extracting_callback_returns_not_iterable_value(): void
+    {
+        /** @psalm-suppress InvalidArgument */
+        $extractingPipeline = pipeline(['foo'])->extract(fn () => true);
+
+        $this->expectException(UnexpectedValueException::class);
+
+        $extractingPipeline->toArray();
+    }
 
     /** @test */
-    public function it_should_return_same_starting_state_when_redicing_empty_iterator(): void
+    public function it_should_return_same_starting_state_when_reducing_empty_iterator(): void
     {
-        $pipeline = IteratorPipeline::empty();
+        $pipeline = pipeline();
 
         $result = $pipeline->reduce(0, function (): int {
             return 1;
@@ -138,7 +149,7 @@ class IteratorPipelineTest extends TestCase
     /** @test */
     public function it_should_call_callback_for_each_item_and_return_last_result(): void
     {
-        $pipeline = IteratorPipeline::from(['Hello', 'World']);
+        $pipeline = pipeline(['Hello', 'World']);
 
         $result = $pipeline->reduce("--", function (string $value, string $acc, int $key): string {
             return "{$acc}{$key}:{$value}--";
@@ -150,7 +161,7 @@ class IteratorPipelineTest extends TestCase
     /** @test */
     public function it_should_return_items_in_reverse_order(): void
     {
-        $pipeline = IteratorPipeline::from([
+        $pipeline = pipeline([
             1 => 'one',
             2 => 'two',
             3 => 'three',
@@ -172,7 +183,7 @@ class IteratorPipelineTest extends TestCase
     /** @test */
     public function it_should_reverse_after_mapping_filtering_and_append(): void
     {
-        $pipeline = IteratorPipeline::empty()
+        $pipeline = pipeline()
             ->append([
                 1 => 'one',
                 2 => 'two',
@@ -199,7 +210,7 @@ class IteratorPipelineTest extends TestCase
     /** @test */
     public function it_should_limit_the_result(): void
     {
-        $pipeline = IteratorPipeline::empty()
+        $pipeline = pipeline()
             ->append([
                 'one' => 1,
                 'two' => 2,
@@ -223,7 +234,7 @@ class IteratorPipelineTest extends TestCase
     /** @test */
     public function it_should_skip_the_result(): void
     {
-        $pipeline = IteratorPipeline::empty()
+        $pipeline = pipeline()
             ->append([
                 'one' => 1,
                 'two' => 2,
@@ -246,7 +257,7 @@ class IteratorPipelineTest extends TestCase
     /** @test */
     public function it_should_allow_consumer_callbacks(): void
     {
-        $sum = IteratorPipeline::from(['1', '2'])
+        $sum = pipeline(['1', '2'])
             ->mapValue('floatval')
             ->filter(function () {
                 return true;
@@ -266,11 +277,12 @@ class IteratorPipelineTest extends TestCase
             3 => new Person('Mark', 42),
         ];
 
-        $result = pipeline($people)->findAny(
+        $result = pipeline($people)->findAnyKeyValue(
             fn (Person $p) => 25 <= $p->age()
         );
 
-        $this->assertSame($people[2], $result->get());
+        $this->assertSame(2, $result->get()->key());
+        $this->assertSame($people[2], $result->get()->value());
     }
 
     /** @test */
@@ -285,11 +297,11 @@ class IteratorPipelineTest extends TestCase
         };
 
 
-        $result = pipeline($people())->findAny(
+        $result = pipeline($people())->findAnyKeyValue(
             fn (Person $p) => 25 <= $p->age()
         );
 
-        $this->assertSame('Jane', $result->get()->name());
+        $this->assertSame('Jane', $result->get()->value()->name());
     }
 
     /** @test */
@@ -301,7 +313,88 @@ class IteratorPipelineTest extends TestCase
             new Person('Jane', 25),
         ];
 
-        $result = pipeline($people)->findAny(fn () => false);
+        $result = pipeline($people)->findAnyKeyValue(fn () => false);
+
+        $this->assertFalse($result->isPresent());
+    }
+
+    /** @test */
+    public function it_should_return_empty_optional_when_item_not_found2(): void
+    {
+        /** @psalm-var array<int, Person> */
+        $people = [
+            new Person('Nick', 10),
+            new Person('Carl', 18),
+            new Person('Jane', 25),
+        ];
+
+        $alternativePerson = new Person('', 0);
+
+        $result = pipeline($people)
+            ->findAnyKeyValue(fn () => false)
+            ->orElse(
+                KeyValuePair::from(-1, $alternativePerson)
+            );
+
+        $this->assertSame(-1, $result->get()->key());
+        $this->assertSame($alternativePerson, $result->get()->value());
+    }
+
+    /** @test */
+    public function it_return_value_optional_when_found(): void
+    {
+        /** @psalm-var list<string> $names */
+        $names = [
+            'Paul',
+            'Marry',
+            'Eric',
+            'Jane',
+            'Adam',
+            'Brenda',
+        ];
+
+        $result = pipeline($names)
+            ->findAnyValue(fn (string $name) => 'J' === $name[0])
+            ->orElse('Not-Found');
+
+        $this->assertTrue($result->isPresent());
+        $this->assertSame('Jane', $result->get());
+    }
+    /** @test */
+    public function it_return_alternative_optional_when_not_found(): void
+    {
+        /** @psalm-var list<string> $names */
+        $names = [
+            'Paul',
+            'Marry',
+            'Eric',
+            'Jane',
+            'Adam',
+            'Brenda',
+        ];
+
+        $result = pipeline($names)
+            ->findAnyValue(fn (string $name) => 'X' === $name[0])
+            ->orElse('Not-Found');
+
+        $this->assertTrue($result->isPresent());
+        $this->assertSame('Not-Found', $result->get());
+    }
+
+    /** @test */
+    public function it_return_empty_optional_when_not_found(): void
+    {
+        $names = [
+            'Paul',
+            'Marry',
+            'Eric',
+            'Jane',
+            'Adam',
+            'Brenda',
+        ];
+
+        $result = pipeline($names)
+            ->findAnyValue(fn (string $name) => 'X' === $name[0]);
 
         $this->assertFalse($result->isPresent());
     }

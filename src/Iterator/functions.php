@@ -39,12 +39,12 @@ function iterator(iterable $iterable): Iterator
  * @psalm-template K
  * @psalm-template V
  *
- * @psalm-param iterable<K,V> $iterable
+ * @psalm-param ?iterable<K,V> $iterable
  * @psalm-return IteratorPipeline<K,V>
  */
-function pipeline(iterable $iterable): IteratorPipeline
+function pipeline(iterable $iterable = null): IteratorPipeline
 {
-    if ([] === $iterable) {
+    if (null === $iterable || [] === $iterable) {
         return IteratorPipeline::empty();
     }
 

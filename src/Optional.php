@@ -45,15 +45,17 @@ class Optional
 
     /**
      * @psalm-param T $alternative
-     * @psalm-return T
+     * @psalm-return self<T>
      */
-    public function orElse($alternative)
+    public function orElse($alternative): self
     {
-        if (null === $this->value) {
-            return $alternative;
+        $self = clone $this;
+
+        if (null === $self->value) {
+            $self->value = $alternative;
         }
 
-        return $this->value;
+        return $self;
     }
 
     /**

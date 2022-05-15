@@ -38,7 +38,7 @@ class OptionalTest extends TestCase
         $optional = Optional::from('Foo');
 
         $this->assertSame('Foo', $optional->get());
-        $this->assertEquals('Foo', $optional->orElse('Bar'));
+        $this->assertEquals('Foo', $optional->orElse('Bar')->get());
     }
 
     /**
@@ -47,7 +47,7 @@ class OptionalTest extends TestCase
      */
     public function it_should_return_other_when_empty(Optional $empty): void
     {
-        $this->assertSame('Foo', $empty->orElse('Foo'));
+        $this->assertSame('Foo', $empty->orElse('Foo')->get());
     }
 
     /**
