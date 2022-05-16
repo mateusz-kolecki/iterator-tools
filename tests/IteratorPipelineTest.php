@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace IteratorTools;
+namespace IteratorTools\Tests;
 
 use ArrayIterator;
 use Exception;
 use Generator;
-use IteratorTools\TestAsset\Person;
+use IteratorTools\KeyValuePair;
+use IteratorTools\Tests\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
-
 use UnexpectedValueException;
 use function IteratorTools\Consumers\float_sum;
 use function IteratorTools\Iterator\pipeline;
@@ -360,6 +360,7 @@ class IteratorPipelineTest extends TestCase
         $this->assertTrue($result->isPresent());
         $this->assertSame('Jane', $result->get());
     }
+
     /** @test */
     public function it_return_alternative_optional_when_not_found(): void
     {

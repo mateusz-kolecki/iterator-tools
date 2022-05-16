@@ -25,17 +25,17 @@
     "vimeo/psalm": "^4.23"
   },
   "autoload": {
+    "psr-4": {
+      "IteratorTools\\": "src/"
+    },
     "files": [
       "src/Iterator/functions.php",
       "src/Consumers/functions.php"
-    ],
-    "psr-4": {
-      "IteratorTools\\": "src/"
-    }
+    ]
   },
   "autoload-dev": {
     "psr-4": {
-      "IteratorTools\\": "tests/"
+      "IteratorTools\\Tests\\": "tests/"
     }
   },
   "config": {

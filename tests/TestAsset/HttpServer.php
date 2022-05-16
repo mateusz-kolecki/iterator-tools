@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace IteratorTools\TestAsset;
+namespace IteratorTools\Tests\TestAsset;
 
 use Exception;
 use function pcntl_fork;
@@ -77,15 +77,6 @@ class HttpServer
         $this->childPid = $pid;
     }
 
-    public function stop(): void
-    {
-        if (0 < $this->childPid) {
-            posix_kill($this->childPid, SIGKILL);
-            pcntl_waitpid($this->childPid, $status);
-            $this->childPid = 0;
-        }
-    }
-
     /**
      * @psalm-param resource $socket
      * @psalm-param callable(string):string $contentFactory
@@ -108,6 +99,15 @@ class HttpServer
 
             @socket_write($conn, $response);
             @socket_close($conn);
+        }
+    }
+
+    public function stop(): void
+    {
+        if (0 < $this->childPid) {
+            posix_kill($this->childPid, SIGKILL);
+            pcntl_waitpid($this->childPid, $status);
+            $this->childPid = 0;
         }
     }
 }

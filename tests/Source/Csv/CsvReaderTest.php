@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-namespace IteratorTools\Source\Csv;
+namespace IteratorTools\Tests\Source\Csv;
 
 use DateTimeImmutable;
 use InvalidArgumentException;
-use IteratorTools\TestAsset\HttpServer;
-use IteratorTools\TestAsset\InMemoryFilesStreamWrapper;
+use IteratorTools\Source\Csv\CsvReader;
+use IteratorTools\Source\Csv\CsvReaderOptions;
+use IteratorTools\Tests\TestAsset\HttpServer;
+use IteratorTools\Tests\TestAsset\InMemoryFilesStreamWrapper;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use function fclose;
@@ -25,13 +27,21 @@ class CsvReaderTest extends TestCase
     /** @var resource|null */
     private $handle = null;
 
-    protected function tearDown(): void
+    /**
+     * @psalm-return array<string, array{ callable(string):(string|resource) }>
+     */
+    public function contentFactoryDataProvider(): array
     {
-        $handle = $this->handle;
+        return [
+            'data:// URL' => [fn (string $content) => $this->prepareDataUrlWith($content)],
+            'pipeline handle' => [fn (string $content) => $this->prepareHandleWith($content)],
+            '\tmpfile()' => [fn (string $content) => $this->prepareTmpFile($content)],
+        ];
+    }
 
-        if (is_resource($handle)) {
-            fclose($handle);
-        }
+    private function prepareDataUrlWith(string $content): string
+    {
+        return 'data://text/plain;base64,' . base64_encode($content);
     }
 
     /**
@@ -45,21 +55,16 @@ class CsvReaderTest extends TestCase
         return $this->handle;
     }
 
-    private function prepareDataUrlWith(string $content): string
+    private function prepareTmpFile(string $content): string
     {
-        return 'data://text/plain;base64,' . base64_encode($content);
-    }
+        $file = tempnam('/tmp', 'iterator-tools--pipeline-tests');
 
-    /**
-     * @psalm-return array<string, array{ callable(string):(string|resource) }>
-     */
-    public function contentFactoryDataProvider(): array
-    {
-        return [
-            'data:// URL' => [fn (string $content) => $this->prepareDataUrlWith($content)],
-            'pipeline handle' => [fn (string $content) => $this->prepareHandleWith($content)],
-            '\tmpfile()' => [fn (string $content) => $this->prepareTmpFile($content)],
-        ];
+        if (false === $file) {
+            throw new RuntimeException("Cannot create file with \\tmpnam()");
+        }
+
+        file_put_contents($file, $content);
+        return $file;
     }
 
     /**
@@ -476,18 +481,6 @@ class CsvReaderTest extends TestCase
         $reader->read()->toArray();
     }
 
-    private function prepareTmpFile(string $content): string
-    {
-        $file = tempnam('/tmp', 'iterator-tools--pipeline-tests');
-
-        if (false === $file) {
-            throw new RuntimeException("Cannot create file with \\tmpnam()");
-        }
-
-        file_put_contents($file, $content);
-        return $file;
-    }
-
     /** @test */
     public function it_should_throw_invalid_argument_exception_when_creating_from_not_string_and_not_from_stream(): void
     {
@@ -495,5 +488,14 @@ class CsvReaderTest extends TestCase
 
         /** @psalm-suppress InvalidArgument */
         CsvReader::from(false);
+    }
+
+    protected function tearDown(): void
+    {
+        $handle = $this->handle;
+
+        if (is_resource($handle)) {
+            fclose($handle);
+        }
     }
 }

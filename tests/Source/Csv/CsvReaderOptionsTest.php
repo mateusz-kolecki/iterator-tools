@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace IteratorTools\Source\Csv;
+namespace IteratorTools\Tests\Source\Csv;
 
 use DateTime;
 use InvalidArgumentException;
+use IteratorTools\Source\Csv\CsvReaderOptions;
 use PHPUnit\Framework\TestCase;
 use const DATE_ATOM;
 

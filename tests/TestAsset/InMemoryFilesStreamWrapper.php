@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace IteratorTools\TestAsset;
+namespace IteratorTools\Tests\TestAsset;
 
 use function array_filter;
 use function array_values;
@@ -55,19 +55,6 @@ class InMemoryFilesStreamWrapper
         }));
     }
 
-    /**
-     * @psalm-param list<mixed> $args
-     */
-    private function registerCall(string $methodName, array $args): void
-    {
-        list(, $methodName) = preg_split('/::/', $methodName);
-
-        self::$calls[$this->fileName][] = [
-            'method' => $methodName,
-            'args' => $args
-        ];
-    }
-
     public function stream_open(string $path, string $mode, int $options, ?string &$opened_path): bool
     {
         $path = parse_url($path, PHP_URL_HOST);
@@ -79,6 +66,19 @@ class InMemoryFilesStreamWrapper
         $this->registerCall(__METHOD__, func_get_args());
 
         return true;
+    }
+
+    /**
+     * @psalm-param list<mixed> $args
+     */
+    private function registerCall(string $methodName, array $args): void
+    {
+        list(, $methodName) = preg_split('/::/', $methodName);
+
+        self::$calls[$this->fileName][] = [
+            'method' => $methodName,
+            'args' => $args
+        ];
     }
 
     public function stream_close(): void

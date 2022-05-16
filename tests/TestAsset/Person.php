@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace IteratorTools\TestAsset;
+namespace IteratorTools\Tests\TestAsset;
 
 class Person
 {

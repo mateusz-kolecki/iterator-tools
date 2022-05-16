@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-namespace IteratorTools;
+namespace IteratorTools\Tests;
 
+use IteratorTools\NotFoundException;
+use IteratorTools\Optional;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

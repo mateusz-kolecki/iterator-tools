@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace IteratorTools;
+namespace IteratorTools\Tests;
 
-use IteratorTools\TestAsset\Person;
+use IteratorTools\Tests\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
 use function IteratorTools\Consumers\float_average;
 use function IteratorTools\Consumers\float_sum;

@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace IteratorTools\Iterator;
+namespace IteratorTools\Tests\Iterator;
 
 use ArrayIterator;
 use EmptyIterator;
+use IteratorTools\Iterator\CallbackMapIterator;
 use PHPUnit\Framework\TestCase;
 use function iterator_to_array;
 
