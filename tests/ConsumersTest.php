@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace IteratorTools\Tests;
 
+use IteratorTools\IteratorPipeline;
+use IteratorTools\NotFoundException;
 use IteratorTools\Tests\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
 use function IteratorTools\Consumers\float_average;
+use function IteratorTools\Consumers\float_max;
+use function IteratorTools\Consumers\float_min;
+use function IteratorTools\Consumers\float_min_max;
 use function IteratorTools\Consumers\float_sum;
 use function IteratorTools\Consumers\group_by;
 use function IteratorTools\Consumers\group_by_arr_key;
@@ -207,6 +212,65 @@ class ConsumersTest extends TestCase
         return [
             [''],
             ['--'],
+        ];
+    }
+
+    /** @test */
+    public function it_should_find_minim_and_maximum_value(): void
+    {
+        $numbers = pipeline([3, 2, 5, 7, -2, 10, 30, 100, 50]);
+
+        $minMax = $numbers->consume(float_min_max());
+
+        $this->assertSame(-2, (int)$minMax->min);
+        $this->assertSame(100, (int)$minMax->max);
+    }
+
+    /** @test */
+    public function it_should_find_minim(): void
+    {
+        $numbers = pipeline([3, 2, 5, 7, -2, 10, 30, 100, 50]);
+
+        $min = $numbers->consume(float_min());
+
+        $this->assertSame(-2, (int)$min);
+    }
+
+    /** @test */
+    public function it_should_find_max(): void
+    {
+        $numbers = pipeline([3, 2, 5, 7, -2, 10, 30, 100, 50]);
+
+        $max = $numbers->consume(float_max());
+
+        $this->assertSame(100, (int)$max);
+    }
+
+    /**
+     * @test
+     * @dataProvider minMaxDataProvider
+     *
+     * @psalm-param callable(IteratorPipeline<mixed,float|int>):mixed $consumer
+     */
+    public function it_should_throw_not_found_exception_when_pipeline_is_empty(
+        callable $consumer
+    ): void {
+        $empty = pipeline();
+
+        $this->expectException(NotFoundException::class);
+
+        $empty->consume($consumer);
+    }
+
+    /**
+     * @psalm-return list<list<callable(IteratorPipeline<mixed,int|float>):mixed>>
+     */
+    public function minMaxDataProvider(): array
+    {
+        return [
+            [float_min_max()],
+            [float_min()],
+            [float_max()],
         ];
     }
 }
