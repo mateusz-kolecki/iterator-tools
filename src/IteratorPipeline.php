@@ -198,12 +198,12 @@ class IteratorPipeline implements IteratorAggregate
         $result = $this->findAnyKeyValue($predicate);
 
         try {
-            return Optional::from(
-                $result->get()->value()
-            );
+            $value = $result->get()->value();
         } catch (NotFoundException $e) {
             return Optional::empty();
         }
+
+        return Optional::from($value);
     }
 
     /**

@@ -78,4 +78,11 @@ class OptionalTest extends TestCase
 
         $this->assertNotSame($optional, $alternate);
     }
+
+    /** @test */
+    public function there_is_only_one_empty(): void
+    {
+        $this->assertSame(Optional::empty(), Optional::empty());
+        $this->assertSame(Optional::from(null), Optional::empty());
+    }
 }

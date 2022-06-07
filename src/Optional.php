@@ -10,6 +10,9 @@ namespace IteratorTools;
  */
 class Optional
 {
+    /** @psalm-var Optional<null> */
+    private static ?Optional $empty = null;
+
     /**
      * @psalm-var ?T
      */
@@ -30,7 +33,11 @@ class Optional
      */
     public static function empty(): self
     {
-        return new self(null);
+        if (null === self::$empty) {
+            self::$empty = new self(null);
+        }
+
+        return self::$empty;
     }
 
     /**
@@ -38,10 +45,13 @@ class Optional
      *
      * @psalm-param ?V $value
      * @psalm-return self<V>
-     * @psalm-pure
      */
     public static function from($value): self
     {
+        if (null === $value) {
+            return self::empty();
+        }
+
         return new self($value);
     }
 
@@ -55,7 +65,7 @@ class Optional
             ? $this->value
             : $alternative;
 
-        return self::from($value);
+        return new self($value);
     }
 
     /**
