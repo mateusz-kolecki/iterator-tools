@@ -8,6 +8,7 @@ use DateTime;
 use InvalidArgumentException;
 use IteratorTools\Source\Csv\CsvReaderOptions;
 use PHPUnit\Framework\TestCase;
+
 use const DATE_ATOM;
 
 class CsvReaderOptionsTest extends TestCase

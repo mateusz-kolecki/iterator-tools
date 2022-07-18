@@ -8,6 +8,7 @@ use ArrayIterator;
 use EmptyIterator;
 use IteratorTools\Iterator\CallbackMapIterator;
 use PHPUnit\Framework\TestCase;
+
 use function iterator_to_array;
 
 class CallbackMapIteratorTest extends TestCase

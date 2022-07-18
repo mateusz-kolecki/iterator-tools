@@ -12,6 +12,7 @@ use IteratorTools\Tests\TestAsset\HttpServer;
 use IteratorTools\Tests\TestAsset\InMemoryFilesStreamWrapper;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+
 use function fclose;
 use function file_put_contents;
 use function fopen;

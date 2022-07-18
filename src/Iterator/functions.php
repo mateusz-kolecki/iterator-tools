@@ -9,6 +9,7 @@ use Iterator;
 use IteratorAggregate;
 use IteratorIterator;
 use IteratorTools\IteratorPipeline;
+
 use function is_array;
 
 /**

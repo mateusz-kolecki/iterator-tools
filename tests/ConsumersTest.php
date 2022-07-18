@@ -8,6 +8,7 @@ use IteratorTools\IteratorPipeline;
 use IteratorTools\NotFoundException;
 use IteratorTools\Tests\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
+
 use function IteratorTools\Consumers\float_average;
 use function IteratorTools\Consumers\float_max;
 use function IteratorTools\Consumers\float_min;

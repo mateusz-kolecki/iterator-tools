@@ -6,6 +6,7 @@ namespace IteratorTools\Iterator;
 
 use EmptyIterator;
 use Iterator;
+
 use function array_reverse;
 
 /**

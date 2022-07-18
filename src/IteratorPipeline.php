@@ -13,6 +13,7 @@ use IteratorTools\Iterator\CallbackMapIterator;
 use IteratorTools\Iterator\ExtractingGenerator;
 use IteratorTools\Iterator\ReverseIterator;
 use LimitIterator;
+
 use function iterator_to_array;
 use function IteratorTools\Iterator\iterator;
 
@@ -176,13 +177,13 @@ class IteratorPipeline implements IteratorAggregate
 
     /**
      * @psalm-param callable(V,K,Iterator<K,V>):bool $predicate
-     * @psalm-return Optional<KeyValuePair<K,V>>
+     * @psalm-return Optional<Pair<K,V>>
      */
     public function findAnyKeyValue(callable $predicate): Optional
     {
         foreach ($this->filter($predicate) as $k => $v) {
-            return Optional::from(
-                KeyValuePair::from($k, $v)
+            return Optional::fromNullable(
+                Pair::from($k, $v)
             );
         }
 
@@ -198,12 +199,12 @@ class IteratorPipeline implements IteratorAggregate
         $result = $this->findAnyKeyValue($predicate);
 
         try {
-            $value = $result->get()->value();
+            $value = $result->getOrThrow()->value();
         } catch (NotFoundException $e) {
             return Optional::empty();
         }
 
-        return Optional::from($value);
+        return Optional::fromNullable($value);
     }
 
     /**

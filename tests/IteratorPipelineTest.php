@@ -7,10 +7,11 @@ namespace IteratorTools\Tests;
 use ArrayIterator;
 use Exception;
 use Generator;
-use IteratorTools\KeyValuePair;
+use IteratorTools\Pair;
 use IteratorTools\Tests\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
+
 use function IteratorTools\Consumers\float_sum;
 use function IteratorTools\Iterator\pipeline;
 use function strtolower;
@@ -281,8 +282,8 @@ class IteratorPipelineTest extends TestCase
             fn (Person $p) => 25 <= $p->age()
         );
 
-        $this->assertSame(2, $result->get()->key());
-        $this->assertSame($people[2], $result->get()->value());
+        $this->assertSame(2, $result->getOrThrow()->key());
+        $this->assertSame($people[2], $result->getOrThrow()->value());
     }
 
     /** @test */
@@ -301,7 +302,7 @@ class IteratorPipelineTest extends TestCase
             fn (Person $p) => 25 <= $p->age()
         );
 
-        $this->assertSame('Jane', $result->get()->value()->name());
+        $this->assertSame('Jane', $result->getOrThrow()->value()->name());
     }
 
     /** @test */
@@ -333,11 +334,11 @@ class IteratorPipelineTest extends TestCase
         $result = pipeline($people)
             ->findAnyKeyValue(fn () => false)
             ->orElse(
-                KeyValuePair::from(-1, $alternativePerson)
+                Pair::from(-1, $alternativePerson)
             );
 
-        $this->assertSame(-1, $result->get()->key());
-        $this->assertSame($alternativePerson, $result->get()->value());
+        $this->assertSame(-1, $result->key());
+        $this->assertSame($alternativePerson, $result->value());
     }
 
     /** @test */
@@ -357,8 +358,7 @@ class IteratorPipelineTest extends TestCase
             ->findAnyValue(fn (string $name) => 'J' === $name[0])
             ->orElse('Not-Found');
 
-        $this->assertTrue($result->isPresent());
-        $this->assertSame('Jane', $result->get());
+        $this->assertSame('Jane', $result);
     }
 
     /** @test */
@@ -378,8 +378,7 @@ class IteratorPipelineTest extends TestCase
             ->findAnyValue(fn (string $name) => 'X' === $name[0])
             ->orElse('Not-Found');
 
-        $this->assertTrue($result->isPresent());
-        $this->assertSame('Not-Found', $result->get());
+        $this->assertSame('Not-Found', $result);
     }
 
     /** @test */

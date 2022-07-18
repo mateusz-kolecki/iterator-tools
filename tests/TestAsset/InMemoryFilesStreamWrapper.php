@@ -10,6 +10,7 @@ use function func_get_args;
 use function parse_url;
 use function strlen;
 use function substr;
+
 use const SEEK_CUR;
 use const SEEK_END;
 use const SEEK_SET;

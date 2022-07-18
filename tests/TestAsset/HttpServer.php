@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace IteratorTools\Tests\TestAsset;
 
 use Exception;
+
 use function pcntl_fork;
 use function pcntl_waitpid;
 use function posix_kill;
@@ -18,6 +19,7 @@ use function socket_read;
 use function socket_strerror;
 use function socket_write;
 use function strlen;
+
 use const AF_INET;
 use const SIGKILL;
 use const SOCK_STREAM;

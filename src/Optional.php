@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace IteratorTools;
 
+use InvalidArgumentException;
+
 /**
  * @psalm-template T
- * @psalm-immutable
  */
 class Optional
 {
@@ -45,8 +46,25 @@ class Optional
      *
      * @psalm-param ?V $value
      * @psalm-return self<V>
+     *
+     * @throws InvalidArgumentException
      */
     public static function from($value): self
+    {
+        if (null === $value) {
+            throw new InvalidArgumentException("Non-null value expected bug NULL given");
+        }
+
+        return new self($value);
+    }
+
+    /**
+     * @psalm-template V
+     *
+     * @psalm-param ?V $value
+     * @psalm-return self<V>
+     */
+    public static function fromNullable($value): self
     {
         if (null === $value) {
             return self::empty();
@@ -56,26 +74,31 @@ class Optional
     }
 
     /**
-     * @psalm-param T $alternative
-     * @psalm-return self<T>
+     * @psalm-param T $other
+     * @psalm-return T
      */
-    public function orElse($alternative): self
+    public function orElse($other)
     {
-        $value = null !== $this->value
-            ? $this->value
-            : $alternative;
+        return $this->value ?? $other;
+    }
 
-        return new self($value);
+    /**
+     * @psalm-param pure-callable():T $supplier
+     * @psalm-return T
+     */
+    public function orElseGet(callable $supplier)
+    {
+        return $this->value ?? $supplier();
     }
 
     /**
      * @psalm-return T
      * @throws NotFoundException
      */
-    public function get()
+    public function getOrThrow()
     {
         if (null === $this->value) {
-            throw new NotFoundException();
+            throw new NotFoundException("No value present");
         }
 
         return $this->value;
@@ -84,5 +107,35 @@ class Optional
     public function isPresent(): bool
     {
         return null !== $this->value;
+    }
+
+    /**
+     * @psalm-template U
+     *
+     * @psalm-param pure-callable(T): U $mapper
+     *
+     * @psalm-return Optional<U>
+     */
+    public function map(callable $mapper): self
+    {
+        if (null === $this->value) {
+            return self::empty();
+        } else {
+            return self::fromNullable(
+                $mapper($this->value)
+            );
+        }
+    }
+
+    /**
+     * @psalm-return IteratorPipeline<array-key, T>
+     */
+    public function pipeline(): IteratorPipeline
+    {
+        if (null === $this->value) {
+            return IteratorPipeline::empty();
+        } else {
+            return IteratorPipeline::from([$this->value]);
+        }
     }
 }

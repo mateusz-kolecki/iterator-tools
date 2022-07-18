@@ -9,7 +9,7 @@ namespace IteratorTools;
  * @psalm-template V
  * @psalm-immutable
  */
-class KeyValuePair
+class Pair
 {
     /** @psalm-var K */
     private $key;

@@ -146,10 +146,10 @@ function group_by(callable $callable): callable
 function group_by_arr_key(string $groupKey): callable
 {
     return group_by(
-    /**
-     * @psalm-param array<string, mixed> $value
-     * @psalm-return false|string
-     */
+        /**
+         * @psalm-param array<string, mixed> $value
+         * @psalm-return false|string
+         */
         function (array $value) use ($groupKey) {
             if (!array_key_exists($groupKey, $value)) {
                 return false;

@@ -8,6 +8,7 @@ use ArrayIterator;
 use Generator;
 use IteratorTools\Iterator\ReverseIterator;
 use PHPUnit\Framework\TestCase;
+
 use function iterator_to_array;
 
 class ReverseIteratorTest extends TestCase

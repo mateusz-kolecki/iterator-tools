@@ -8,6 +8,7 @@ use Generator;
 use InvalidArgumentException;
 use IteratorTools\IteratorPipeline;
 use RuntimeException;
+
 use function array_combine;
 use function count;
 use function fclose;
