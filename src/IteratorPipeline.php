@@ -179,12 +179,10 @@ class IteratorPipeline implements IteratorAggregate
      * @psalm-param callable(V,K,Iterator<K,V>):bool $predicate
      * @psalm-return Optional<Pair<K,V>>
      */
-    public function findAnyKeyValue(callable $predicate): Optional
+    public function findAnyKeyAndValue(callable $predicate): Optional
     {
         foreach ($this->filter($predicate) as $k => $v) {
-            return Optional::fromNullable(
-                Pair::from($k, $v)
-            );
+            return Optional::from(Pair::from($k, $v));
         }
 
         return Optional::empty();
@@ -196,7 +194,7 @@ class IteratorPipeline implements IteratorAggregate
      */
     public function findAnyValue(callable $predicate): Optional
     {
-        $result = $this->findAnyKeyValue($predicate);
+        $result = $this->findAnyKeyAndValue($predicate);
 
         try {
             $value = $result->getOrThrow()->value();

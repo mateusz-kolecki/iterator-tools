@@ -278,7 +278,7 @@ class IteratorPipelineTest extends TestCase
             3 => new Person('Mark', 42),
         ];
 
-        $result = pipeline($people)->findAnyKeyValue(
+        $result = pipeline($people)->findAnyKeyAndValue(
             fn (Person $p) => 25 <= $p->age()
         );
 
@@ -298,7 +298,7 @@ class IteratorPipelineTest extends TestCase
         };
 
 
-        $result = pipeline($people())->findAnyKeyValue(
+        $result = pipeline($people())->findAnyKeyAndValue(
             fn (Person $p) => 25 <= $p->age()
         );
 
@@ -314,7 +314,7 @@ class IteratorPipelineTest extends TestCase
             new Person('Jane', 25),
         ];
 
-        $result = pipeline($people)->findAnyKeyValue(fn () => false);
+        $result = pipeline($people)->findAnyKeyAndValue(fn () => false);
 
         $this->assertFalse($result->isPresent());
     }
@@ -332,7 +332,7 @@ class IteratorPipelineTest extends TestCase
         $alternativePerson = new Person('', 0);
 
         $result = pipeline($people)
-            ->findAnyKeyValue(fn () => false)
+            ->findAnyKeyAndValue(fn () => false)
             ->orElse(
                 Pair::from(-1, $alternativePerson)
             );

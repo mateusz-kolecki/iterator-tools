@@ -125,6 +125,39 @@ class OptionalTest extends TestCase
     }
 
     /** @test */
+    public function it_should_create_empty_pipeline_when_not_present(): void
+    {
+        $empty = Optional::empty();
+
+        $result = $empty->pipeline()->toArray();
+
+        $this->assertCount(0, $result);
+    }
+
+    /** @test */
+    public function it_should_create_pipeline_with_single_element(): void
+    {
+        $optional = Optional::from(123);
+
+        $result = $optional->pipeline()->toArray();
+
+        $this->assertSame([123], $result);
+    }
+
+    /** @test */
+    public function it_should_allow_for_converting_back_and_forth(): void
+    {
+        /** @psalm-var Optional<int> $optional */
+        $optional = Optional::from(123);
+
+        $result = $optional->pipeline()
+            ->findAnyValue(fn () => true)
+            ->orElse(0);
+
+        $this->assertSame(123, $result);
+    }
+
+    /** @test */
     public function there_is_only_one_empty(): void
     {
         $this->assertSame(Optional::empty(), Optional::empty());
