@@ -7,6 +7,7 @@ namespace IteratorTools\Tests;
 use ArrayIterator;
 use Exception;
 use Generator;
+use InvalidArgumentException;
 use IteratorTools\Pair;
 use IteratorTools\Tests\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
@@ -14,6 +15,7 @@ use UnexpectedValueException;
 
 use function IteratorTools\Consumers\float_sum;
 use function IteratorTools\Iterator\pipeline;
+use function range;
 use function strtolower;
 use function strtoupper;
 
@@ -397,5 +399,69 @@ class IteratorPipelineTest extends TestCase
             ->findAnyValue(fn (string $name) => 'X' === $name[0]);
 
         $this->assertFalse($result->isPresent());
+    }
+
+    /** @test */
+    public function it_can_process_elements_in_batches(): void
+    {
+        $names = pipeline([
+            '001' => 'Anna',
+            '002' => 'Barbara',
+            '003' => 'Michael',
+            '004' => 'John',
+            '005' => 'Margaret',
+            '006' => 'Bart',
+            '007' => 'James',
+            '008' => 'Bernard',
+        ]);
+
+        $result = $names->batchKeysAndValues(3)
+            ->map(function (iterable $batchOfNames): string {
+                $out = [];
+                foreach ($batchOfNames as $name) {
+                    $out[] = "{$name->value()} ({$name->key()})";
+                }
+                return implode(", ", $out);
+            });
+
+        $expected = [
+            0 => 'Anna (001), Barbara (002), Michael (003)',
+            1 => 'John (004), Margaret (005), Bart (006)',
+            2 => 'James (007), Bernard (008)',
+        ];
+
+        $this->assertSame($expected, $result->toArrayPreserveKeys());
+    }
+
+    /** @test */
+    public function it_creates_only_one_batch_when_not_enough_values_for_more(): void
+    {
+        $numbers = range(1, 9);
+
+        $result = pipeline($numbers)->batchValues(10);
+
+        $expected = [
+            0 => [0 => 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        ];
+
+        $this->assertSame($expected, $result->toArrayPreserveKeys());
+    }
+
+    /** @test */
+    public function it_gives_no_batches_when_source_is_empty(): void
+    {
+        $empty = pipeline();
+
+        $result = $empty->batchValues(1);
+
+        $this->assertEmpty($result->toArrayPreserveKeys());
+    }
+
+    /** @test */
+    public function it_throws_when_batch_size_is_not_valid(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        pipeline()->batchValues(0);
     }
 }

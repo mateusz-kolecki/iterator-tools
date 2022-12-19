@@ -9,6 +9,7 @@ use CallbackFilterIterator;
 use EmptyIterator;
 use Iterator;
 use IteratorAggregate;
+use IteratorTools\Iterator\BatchIterator;
 use IteratorTools\Iterator\CallbackMapIterator;
 use IteratorTools\Iterator\ExtractingGenerator;
 use IteratorTools\Iterator\ReverseIterator;
@@ -162,6 +163,26 @@ class IteratorPipeline implements IteratorAggregate
     {
         return new self(
             new LimitIterator($this->innerIterator, 0, $count)
+        );
+    }
+
+    /**
+     * @psalm-return self<int, list<Pair<K, V>>>
+     */
+    public function batchKeysAndValues(int $batchSize): self
+    {
+        return $this
+            ->map(fn ($value, $key): Pair => Pair::from($key, $value))
+            ->batchValues($batchSize);
+    }
+
+    /**
+     * @psalm-return self<int, list<V>>
+     */
+    public function batchValues(int $batchSize): self
+    {
+        return new self(
+            new BatchIterator($this->innerIterator, $batchSize)
         );
     }
 
