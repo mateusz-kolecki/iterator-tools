@@ -29,6 +29,9 @@ class InMemoryFilesStreamWrapper
     private string $fileName;
     private int $position;
 
+    /** @var resource */
+    public $context;
+
     public static function reset(): void
     {
         self::$files = [];
