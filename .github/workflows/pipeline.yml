@@ -45,4 +45,4 @@ jobs:
     
     - name: Check coding standards
       run: composer run coding-standards
-      if: matrix.php != '8.1'
+      if: matrix.php != '8.1' && matrix.php != '8.2'
