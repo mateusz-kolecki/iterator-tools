@@ -2,22 +2,20 @@
 
 ![Build status](https://github.com/mateusz-kolecki/iterator-tools/actions/workflows/pipeline.yml/badge.svg?branch=master)
 
----
-
-**Work in progress!**
-
-This library is in an early stage of development. It is not ready for production usage.
-
----
-
 Library provides tools for working with iterators in a convenient way. Promotes functional style
 of programming when dealing with `iterable` collections.
+
+## Install using Composer:
+
+```bash
+composer require iterator-tools/pipeline
+```
+
+## Example:
 
 Allows defining iterators pipeline separately from actually consuming it.
 Allows processing large collections by avoiding loading all data into the memory
 at once - each key, value pair returned by source iterator is passed by multiple stages separately.
-
-## Example:
 
 ```php
 <?php
@@ -62,10 +60,4 @@ id,count,created_at
 2,10,"2022-02-01 12:00"
 3,50,"2022-03-01 12:00"
 4,20,"2022-04-01 12:00"
-```
-
-## Install using Composer:
-
-```bash
-composer require iterator-tools/pipeline
 ```
