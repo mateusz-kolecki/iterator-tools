@@ -1,10 +1,12 @@
 <?php
 
-$finder = \PhpCsFixer\Finder::create()
+declare(strict_types=1);
+
+$finder = PhpCsFixer\Finder::create()
     ->in(__DIR__ . '/src')
     ->in(__DIR__ . '/tests');
 
-return (new \PhpCsFixer\Config())
+return (new PhpCsFixer\Config())
     ->setFinder($finder)
     ->setUsingCache(false)
     ->setRules([
@@ -13,6 +15,8 @@ return (new \PhpCsFixer\Config())
         'array_syntax' => [
             'syntax' => 'short'
         ],
+
+        'declare_strict_types' => true,
 
         'global_namespace_import' => [
             'import_classes' => true,

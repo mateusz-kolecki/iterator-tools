@@ -22,9 +22,10 @@ use function IteratorTools\Iterator\iterator;
  * @psalm-template K
  * @psalm-template V
  *
+ * @template-implements Pipeline<K,V>
  * @template-implements IteratorAggregate<K,V>
  */
-class IteratorPipeline implements IteratorAggregate
+class IteratorPipeline implements Pipeline, IteratorAggregate
 {
     /**
      * @psalm-var Iterator<K,V>
@@ -246,7 +247,7 @@ class IteratorPipeline implements IteratorAggregate
     /**
      * @template R
      *
-     * @psalm-param callable(self<K,V>):R $consumer
+     * @psalm-param callable(Pipeline<K,V>):R $consumer
      * @psalm-return R
      */
     public function consume(callable $consumer)

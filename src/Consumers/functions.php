@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace IteratorTools\Consumers;
 
-use IteratorTools\IteratorPipeline;
 use IteratorTools\NotFoundException;
+use IteratorTools\Pipeline;
 use stdClass;
 
 /**
- * @psalm-return callable(IteratorPipeline<mixed, int>):int
+ * @psalm-return callable(Pipeline<mixed, int>):int
  */
 function int_sum(): callable
 {
-    return function (IteratorPipeline $pipeline): int {
+    return function (Pipeline $pipeline): int {
         return $pipeline->reduce(
             0,
             fn (int $value, int $sum): int => $sum + $value
@@ -22,28 +22,31 @@ function int_sum(): callable
 }
 
 /**
- * @psalm-return callable(IteratorPipeline<mixed, float>):float
+ * @psalm-return callable(Pipeline<mixed, float>):float
  */
 function float_sum(): callable
 {
-    return function (IteratorPipeline $pipeline): float {
-        return $pipeline->reduce(
-            0.0,
-            fn (float $value, float $sum): float => $sum + $value
-        );
+    return function (Pipeline $pipeline): float {
+        $s = 0.0;
+
+        foreach ($pipeline->getIterator() as $i) {
+            $s += $i;
+        }
+
+        return $s;
     };
 }
 
 /**
- * @psalm-return callable(IteratorPipeline<mixed, int|float>):float
+ * @psalm-return callable(Pipeline<mixed, int|float>):float
  */
 function float_average(): callable
 {
-    return function (IteratorPipeline $pipeline): float {
+    return function (Pipeline $pipeline): float {
         $sum = 0.0;
         $count = 0;
 
-        foreach ($pipeline as $number) {
+        foreach ($pipeline->getIterator() as $number) {
             $sum += (float)$number;
             $count += 1;
         }
@@ -53,18 +56,18 @@ function float_average(): callable
 }
 
 /**
- * @psalm-return callable(IteratorPipeline<mixed, int|float>):object{min: float, max: float}
+ * @psalm-return callable(Pipeline<mixed, int|float>):object{min: float, max: float}
  */
 function float_min_max(): callable
 {
-    return function (IteratorPipeline $pipeline): object {
+    return function (Pipeline $pipeline): object {
         /** @var ?float $max */
         $max = null;
 
         /** @var ?float $min */
         $min = null;
 
-        foreach ($pipeline as $number) {
+        foreach ($pipeline->getIterator() as $number) {
             if (null === $max || $max < $number) {
                 $max = $number;
             }
@@ -87,22 +90,22 @@ function float_min_max(): callable
 }
 
 /**
- * @psalm-return callable(IteratorPipeline<mixed, int|float>):float
+ * @psalm-return callable(Pipeline<mixed, int|float>):float
  */
 function float_min(): callable
 {
-    return function (IteratorPipeline $pipeline): float {
+    return function (Pipeline $pipeline): float {
         $minMax = float_min_max();
         return $minMax($pipeline)->min;
     };
 }
 
 /**
- * @psalm-return callable(IteratorPipeline<mixed, int|float>):float
+ * @psalm-return callable(Pipeline<mixed, int|float>):float
  */
 function float_max(): callable
 {
-    return function (IteratorPipeline $pipeline): float {
+    return function (Pipeline $pipeline): float {
         $minMax = float_min_max();
         return $minMax($pipeline)->max;
     };
@@ -115,14 +118,14 @@ function float_max(): callable
  *
  * @psalm-param callable(V, K):(string|false) $callable
  *
- * @psalm-return callable(IteratorPipeline<K,V>): array<string,list<V>>
+ * @psalm-return callable(Pipeline<K,V>): array<string,list<V>>
  */
 function group_by(callable $callable): callable
 {
-    return function (IteratorPipeline $pipeline) use ($callable): array {
+    return function (Pipeline $pipeline) use ($callable): array {
         $map = [];
 
-        foreach ($pipeline as $key => $value) {
+        foreach ($pipeline->getIterator() as $key => $value) {
             $groupBy = $callable($value, $key);
 
             if (false === $groupBy) {
@@ -141,7 +144,7 @@ function group_by(callable $callable): callable
 }
 
 /**
- * @psalm-return callable(IteratorPipeline<mixed, array<string, mixed>>): array<string, list<array<string, mixed>>>
+ * @psalm-return callable(Pipeline<mixed, array<string, mixed>>): array<string, list<array<string, mixed>>>
  */
 function group_by_arr_key(string $groupKey): callable
 {
@@ -161,11 +164,11 @@ function group_by_arr_key(string $groupKey): callable
 }
 
 /**
- * @psalm-return callable(IteratorPipeline<mixed, string|\Stringable>):string
+ * @psalm-return callable(Pipeline<mixed, string|\Stringable>):string
  */
 function str_join(string $delimiter = ''): callable
 {
-    return function (IteratorPipeline $pipeline) use ($delimiter): string {
+    return function (Pipeline $pipeline) use ($delimiter): string {
         $iterator = $pipeline->getIterator();
         $iterator->rewind();
 

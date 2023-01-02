@@ -10,6 +10,8 @@ use IteratorAggregate;
 use IteratorIterator;
 use IteratorTools\IteratorPipeline;
 
+use IteratorTools\Pipeline;
+
 use function is_array;
 
 /**
@@ -37,15 +39,15 @@ function iterator(iterable $iterable): Iterator
 }
 
 /**
- * @psalm-template K
- * @psalm-template V
+ * @psalm-template TKey
+ * @psalm-template TValue
  *
- * @psalm-param ?iterable<K,V> $iterable
- * @psalm-return IteratorPipeline<K,V>
+ * @psalm-param iterable<TKey,TValue> $iterable
+ * @psalm-return Pipeline<TKey,TValue>
  */
-function pipeline(iterable $iterable = null): IteratorPipeline
+function pipeline(iterable $iterable = []): Pipeline
 {
-    if (null === $iterable || [] === $iterable) {
+    if ([] === $iterable) {
         return IteratorPipeline::empty();
     }
 

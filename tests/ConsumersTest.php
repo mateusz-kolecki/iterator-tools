@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace IteratorTools\Tests;
 
-use IteratorTools\IteratorPipeline;
 use IteratorTools\NotFoundException;
+use IteratorTools\Pipeline;
 use IteratorTools\Tests\TestAsset\Person;
 use PHPUnit\Framework\TestCase;
 
@@ -251,7 +251,7 @@ class ConsumersTest extends TestCase
      * @test
      * @dataProvider minMaxDataProvider
      *
-     * @psalm-param callable(IteratorPipeline<mixed,float|int>):mixed $consumer
+     * @psalm-param callable(Pipeline<mixed,float|int>):mixed $consumer
      */
     public function it_should_throw_not_found_exception_when_pipeline_is_empty(
         callable $consumer
@@ -264,7 +264,7 @@ class ConsumersTest extends TestCase
     }
 
     /**
-     * @psalm-return list<list<callable(IteratorPipeline<mixed,int|float>):mixed>>
+     * @psalm-return list<list<callable(Pipeline<mixed,int|float>):mixed>>
      */
     public function minMaxDataProvider(): array
     {
