@@ -24,7 +24,7 @@ class BatchIterator implements Iterator
 
     private int $batchSize;
 
-    private int $batchIndex;
+    private int $batchIndex = 0;
 
     /**
      * @psalm-param Iterator<mixed, V> $original
@@ -38,7 +38,6 @@ class BatchIterator implements Iterator
         $this->original = $original;
         $this->batchSize = $batchSize;
         $this->batch = [];
-        $this->batchIndex = 0;
     }
 
     public function next(): void

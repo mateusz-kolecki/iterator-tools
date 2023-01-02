@@ -68,10 +68,10 @@ class CsvReader
             throw new RuntimeException($error, $errno);
         });
 
+        /** @infection-ignore-all */
         try {
             $handle = @fopen($name, 'r');
         } finally {
-            /** @infection-ignore-all */
             restore_error_handler();
         }
 

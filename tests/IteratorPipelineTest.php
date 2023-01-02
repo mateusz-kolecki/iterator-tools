@@ -464,4 +464,22 @@ class IteratorPipelineTest extends TestCase
 
         pipeline()->batchValues(0);
     }
+
+    /** @test */
+    public function it_rewinds_inner_previous_iterator(): void
+    {
+        // given
+        $source = pipeline(new ArrayIterator([1, 2, 3, 4]));
+
+        $one = $source->batchValues(2);
+        $two = $source->batchValues(2);
+
+        $one->toArrayPreserveKeys();
+
+        // when
+        $result = $two->toArrayPreserveKeys();
+
+        // then
+        $this->assertSame([[1, 2], [3, 4]], $result);
+    }
 }
