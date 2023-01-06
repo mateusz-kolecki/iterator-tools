@@ -26,7 +26,7 @@ class OptionalTest extends TestCase
     /** @test */
     public function it_should_return_stored_value(): void
     {
-        /** @psalm-var Optional<int> */
+        /** @psalm-var Optional<int> $optional */
         $optional = Optional::from(1234);
 
         $this->assertSame(1234, $optional->getOrThrow());
@@ -44,7 +44,7 @@ class OptionalTest extends TestCase
     /** @test */
     public function it_should_return_stored_value_when_not_empty(): void
     {
-        /** @psalm-var Optional<string> */
+        /** @psalm-var Optional<string> $optional */
         $optional = Optional::from('Foo');
 
         $this->assertSame('Foo', $optional->getOrThrow());
